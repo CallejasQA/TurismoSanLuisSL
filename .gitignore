@@ -1,0 +1,9 @@
+# Ignorar archivos sensibles y carpetas temporales
+.env
+*.log
+/vendor/
+node_modules/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
