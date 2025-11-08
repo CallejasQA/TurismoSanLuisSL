@@ -1,0 +1,88 @@
+<?php
+require_once __DIR__ . '/../modelos/Sitio.php';
+
+class SitioController {
+    private $modelo;
+    public function __construct() { $this->modelo = new Sitio(); }
+
+    public function lista_propietario() {
+        $propietario = $_SESSION['usuario_id'] ?? null;
+        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        $sitios = $this->modelo->obtenerPorPropietario($propietario);
+        require __DIR__ . '/../vistas/propietario/lista_sitios.php';
+    }
+
+    public function crear() {
+        $propietario = $_SESSION['usuario_id'] ?? null;
+        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        if ($_SERVER['REQUEST_METHOD']==='POST') {
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
+            $imagen = null;
+            if (!empty($_FILES['imagen']['name'])) {
+                $dir = __DIR__ . '/../storage/subidas/';
+                $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
+                if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
+                    $imagen = 'storage/subidas/'.$nombreArchivo;
+                }
+            }
+            $data = [
+                'propietario_id'=>$propietario,
+                'nombre'=>$_POST['nombre']??'',
+                'descripcion'=>$_POST['descripcion']??'',
+                'ubicacion'=>$_POST['ubicacion']??'',
+                'precio_noche'=>$_POST['precio_noche']??0,
+                'rango_precio'=>$_POST['rango_precio']??'',
+                'imagen'=>$imagen,
+                'estado'=>'pendiente'
+            ];
+            $this->modelo->crearAlojamiento($data);
+            header('Location: index.php?ruta=propietario/sitios'); exit;
+        }
+        $sitio = null;
+        require __DIR__ . '/../vistas/propietario/form_sitio.php';
+    }
+
+    public function editar() {
+        $propietario = $_SESSION['usuario_id'] ?? null;
+        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        $id = $_GET['id'] ?? null;
+        if (!$id) { header('Location: index.php?ruta=propietario/sitios'); exit; }
+        $sitio = $this->modelo->buscarAlojamiento($id);
+        if (!$sitio || $sitio['propietario_id'] != $propietario) die('No autorizado');
+        if ($_SERVER['REQUEST_METHOD']==='POST') {
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
+            $imagen = $sitio['imagen'] ?? null;
+            if (!empty($_FILES['imagen']['name'])) {
+                $dir = __DIR__ . '/../storage/subidas/';
+                $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
+                if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
+                    $imagen = 'storage/subidas/'.$nombreArchivo;
+                }
+            }
+            $data = [
+                'nombre'=>$_POST['nombre']??'',
+                'descripcion'=>$_POST['descripcion']??'',
+                'ubicacion'=>$_POST['ubicacion']??'',
+                'precio_noche'=>$_POST['precio_noche']??0,
+                'rango_precio'=>$_POST['rango_precio']??'',
+                'imagen'=>$imagen,
+                'estado'=>$sitio['estado']
+            ];
+            $this->modelo->actualizarAlojamiento($id,$data);
+            header('Location: index.php?ruta=propietario/sitios'); exit;
+        }
+        require __DIR__ . '/../vistas/propietario/form_sitio.php';
+    }
+
+    public function eliminar() {
+        $propietario = $_SESSION['usuario_id'] ?? null;
+        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        $id = $_GET['id'] ?? null;
+        if ($id) {
+            $sitio = $this->modelo->buscarAlojamiento($id);
+            if ($sitio && $sitio['propietario_id']==$propietario) $this->modelo->eliminarAlojamiento($id);
+        }
+        header('Location: index.php?ruta=propietario/sitios'); exit;
+    }
+}
+?>

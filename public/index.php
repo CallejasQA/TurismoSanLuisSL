@@ -1,28 +1,50 @@
 <?php
-require_once __DIR__ . '/../src/controllers/AlojamientoController.php';
-$alojamientos = AlojamientoController::obtenerTodos();
-include __DIR__ . '/../views/header.php';
+session_start();
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../controladores/AuthController.php';
+require_once __DIR__ . '/../controladores/SitioController.php';
+require_once __DIR__ . '/../controladores/AdminController.php';
+
+$ruta = $_GET['ruta'] ?? 'inicio';
+
+function cabecera($titulo='Turismo San Luis') {
+    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'.htmlspecialchars($titulo).'</title><link rel="stylesheet" href="../assets/css/style.css"></head><body><header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav><a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a>';
+    if (isset($_SESSION['usuario_id'])) {
+        echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
+        if (($_SESSION['usuario_rol'] ?? '')==='admin') echo ' | <a href="index.php?ruta=admin/afiliaciones">Admin</a>';
+        echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
+    } else {
+        echo ' | <a href="index.php?ruta=auth/login">Ingresar</a>';
+    }
+    echo '</nav></div></header><main class="container">';
+}
+function pie() { echo '</main><footer class="site-footer"><div class="container">© '.date('Y').' Turismo San Luis</div></footer></body></html>'; }
+
+switch ($ruta) {
+    case 'propietario/sitios': $ctrl = new SitioController(); $ctrl->lista_propietario(); break;
+    case 'propietario/sitios/crear': $ctrl = new SitioController(); $ctrl->crear(); break;
+    case 'propietario/sitios/editar': $ctrl = new SitioController(); $ctrl->editar(); break;
+    case 'propietario/sitios/eliminar': $ctrl = new SitioController(); $ctrl->eliminar(); break;
+    case 'admin/afiliaciones': $ctrl = new AdminController(); $ctrl->lista_afiliaciones(); break;
+    case 'admin/afiliaciones/aprobar': $ctrl = new AdminController(); $ctrl->aprobar(); break;
+    case 'admin/afiliaciones/rechazar': $ctrl = new AdminController(); $ctrl->rechazar(); break;
+    case 'auth/login':
+        if ($_SERVER['REQUEST_METHOD']==='POST') {
+            $email = $_POST['email'] ?? ''; $pass = $_POST['password'] ?? '';
+            if (iniciar_sesion($email,$pass)) { header('Location: index.php'); exit; } else { $error='Credenciales incorrectas'; }
+        }
+        require __DIR__ . '/../vistas/auth/login.php'; break;
+    case 'auth/logout': session_unset(); session_destroy(); header('Location: index.php'); exit; break;
+    case 'auth/register':
+        if ($_SERVER['REQUEST_METHOD']==='POST') {
+            $res = manejar_registro_afiliado();
+            $msg = $res['message'] ?? ''; $ok = $res['success'] ?? false;
+            require __DIR__ . '/../vistas/auth/register_afiliado.php';
+        } else {
+            require __DIR__ . '/../vistas/auth/register_afiliado.php';
+        }
+        break;
+    case 'sembrar': require __DIR__ . '/sembrar_usuarios.php'; break;
+    default: cabecera('Inicio'); echo '<h1>Bienvenido a Turismo San Luis</h1><p>Plataforma de demostración.</p>'; pie(); break;
+}
 ?>
-
-<main class="container">
-  <section class="hero">
-    <h1>Turismo San Luis Antioquia</h1>
-    <p>Descubre fincas, glampings y ecohoteles únicos en San Luis.</p>
-  </section>
-
-  <section class="alojamientos">
-    <h2>Alojamientos recomendados</h2>
-    <div class="grid">
-      <?php foreach ($alojamientos as $a): ?>
-        <div class="card">
-          <img src="assets/img/<?= htmlspecialchars($a['imagen']) ?>" alt="Foto alojamiento">
-          <h3><?= htmlspecialchars($a['nombre']) ?></h3>
-          <p><?= htmlspecialchars($a['tipo']) ?> · Desde $<?= htmlspecialchars($a['precio_min']) ?></p>
-          <a href="detalle.php?id=<?= $a['id'] ?>">Ver detalles</a>
-        </div>
-      <?php endforeach; ?>
-    </div>
-  </section>
-</main>
-
-<?php include __DIR__ . '/../views/footer.php'; ?>
