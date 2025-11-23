@@ -6,17 +6,11 @@
     </div>
     <form class="toolbar__actions" method="get" action="index.php">
       <input type="hidden" name="ruta" value="admin/reservas">
-<<<<<<< ours
-      <input type="month" name="mes" value="<?= htmlspecialchars($_GET['mes'] ?? '') ?>">
-      <select name="propietario">
-        <option value="">Todos los propietarios</option>
-        <?php foreach ($propietarios as $p): $sel = isset($_GET['propietario']) && $_GET['propietario'] !== '' && (int)$_GET['propietario'] === (int)$p['id']; ?>
-=======
       <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
       <select name="propietario">
         <option value="">Todos los propietarios</option>
-        <?php foreach ($propietarios as $p): $sel = ($propietarioSeleccionado ?? null) !== null && (int)$propietarioSeleccionado === (int)$p['id']; ?>
->>>>>>> theirs
+        <?php foreach ($propietarios as $p):
+          $sel = ($propietarioSeleccionado ?? null) !== null && (int)$propietarioSeleccionado === (int)$p['id']; ?>
           <option value="<?= (int)$p['id'] ?>" <?= $sel ? 'selected' : '' ?>><?= htmlspecialchars($p['email']) ?></option>
         <?php endforeach; ?>
       </select>

@@ -10,13 +10,13 @@ class ReservaController {
 
     public function adminIndex() {
         $this->soloAdmin();
-    $mes = $this->mesSeguro($_GET['mes'] ?? '');
-    $propietario = isset($_GET['propietario']) && $_GET['propietario'] !== '' ? (int) $_GET['propietario'] : null;
+        $mes = $this->mesSeguro($_GET['mes'] ?? '');
+        $propietario = isset($_GET['propietario']) && $_GET['propietario'] !== '' ? (int) $_GET['propietario'] : null;
 
-    $reservas = $this->reservaModelo->listarParaAdmin($mes, $propietario);
-    $propietarios = $this->reservaModelo->propietariosConReservas();
-    $mesSeleccionado = $mes;
-    $propietarioSeleccionado = $propietario;
+        $reservas = $this->reservaModelo->listarParaAdmin($mes, $propietario);
+        $propietarios = $this->reservaModelo->propietariosConReservas();
+        $mesSeleccionado = $mes;
+        $propietarioSeleccionado = $propietario;
         require __DIR__ . '/../vistas/admin/reservas.php';
     }
 
@@ -34,9 +34,9 @@ class ReservaController {
 
     public function propietarioIndex() {
         $this->soloPropietario();
-    $mes = $this->mesSeguro($_GET['mes'] ?? '');
-    $reservas = $this->reservaModelo->listarParaPropietario($_SESSION['usuario_id'], $mes);
-    $mesSeleccionado = $mes;
+        $mes = $this->mesSeguro($_GET['mes'] ?? '');
+        $reservas = $this->reservaModelo->listarParaPropietario($_SESSION['usuario_id'], $mes);
+        $mesSeleccionado = $mes;
         require __DIR__ . '/../vistas/propietario/reservas.php';
     }
 

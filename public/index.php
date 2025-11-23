@@ -40,120 +40,22 @@ function cabecera($titulo = 'Turismo San Luis') {
 
     echo '</nav></div></header><main class="container">';
 }
-
-function pie() {
-    echo '</main><footer class="site-footer"><div class="container">© ' . date('Y') . ' Turismo San Luis</div></footer></body></html>';
-}
+function pie() { echo '</main><footer class="site-footer"><div class="container">© '.date('Y').' Turismo San Luis</div></footer></body></html>'; }
 
 switch ($ruta) {
-    case 'propietario/sitios':
-        $ctrl = new SitioController();
-        $ctrl->lista_propietario();
-        break;
-    case 'propietario/sitios/crear':
-        $ctrl = new SitioController();
-        $ctrl->crear();
-        break;
-    case 'propietario/sitios/editar':
-        $ctrl = new SitioController();
-        $ctrl->editar();
-        break;
-    case 'propietario/sitios/eliminar':
-        $ctrl = new SitioController();
-        $ctrl->eliminar();
-        break;
-    case 'propietario/reservas':
-        $ctrl = new ReservaController();
-        $ctrl->propietarioIndex();
-        break;
-    case 'propietario/reservas/estado':
-        $ctrl = new ReservaController();
-        $ctrl->propietarioEstado();
-        break;
-    case 'alojamiento/ver':
-        $ctrl = new SitioController();
-        $ctrl->ver();
-        break;
-    case 'admin/afiliaciones':
-        $ctrl = new AdminController();
-        $ctrl->lista_afiliaciones();
-        break;
-    case 'admin/afiliaciones/aprobar':
-        $ctrl = new AdminController();
-        $ctrl->aprobar();
-        break;
-    case 'admin/afiliaciones/rechazar':
-        $ctrl = new AdminController();
-        $ctrl->rechazar();
-        break;
-    case 'admin/alojamientos':
-        $ctrl = new AdminController();
-        $ctrl->alojamientos();
-        break;
-    case 'admin/alojamientos/aprobar':
-        $ctrl = new AdminController();
-        $ctrl->aprobarAlojamiento();
-        break;
-    case 'admin/alojamientos/rechazar':
-        $ctrl = new AdminController();
-        $ctrl->rechazarAlojamiento();
-        break;
-    case 'admin/alojamientos/activar':
-        $ctrl = new AdminController();
-        $ctrl->activarAlojamiento();
-        break;
-    case 'admin/alojamientos/desactivar':
-        $ctrl = new AdminController();
-        $ctrl->desactivarAlojamiento();
-        break;
-    case 'admin/servicios':
-        $ctrl = new AdminController();
-        $ctrl->servicios();
-        break;
-    case 'admin/servicios/crear':
-        $ctrl = new AdminController();
-        $ctrl->crearServicio();
-        break;
-    case 'admin/servicios/actualizar':
-        $ctrl = new AdminController();
-        $ctrl->actualizarServicio();
-        break;
-    case 'admin/servicios/eliminar':
-        $ctrl = new AdminController();
-        $ctrl->eliminarServicio();
-        break;
-    case 'admin/reservas':
-        $ctrl = new ReservaController();
-        $ctrl->adminIndex();
-        break;
-    case 'admin/reservas/estado':
-        $ctrl = new ReservaController();
-        $ctrl->adminEstado();
-        break;
-    case 'admin/clientes':
-        $ctrl = new ClienteController();
-        $ctrl->adminIndex();
-        break;
-    case 'admin/clientes/crear':
-        $ctrl = new ClienteController();
-        $ctrl->adminCrear();
-        break;
-    case 'admin/clientes/editar':
-        $ctrl = new ClienteController();
-        $ctrl->adminEditar();
-        break;
-    case 'admin/clientes/eliminar':
-        $ctrl = new ClienteController();
-        $ctrl->adminEliminar();
-        break;
-    case 'cliente/reservar':
-        $ctrl = new ClienteController();
-        $ctrl->reservar();
-        break;
-    case 'cliente/reservas':
-        $ctrl = new ClienteController();
-        $ctrl->misReservas();
-        break;
+    case 'propietario/sitios': $ctrl = new SitioController(); $ctrl->lista_propietario(); break;
+    case 'propietario/sitios/crear': $ctrl = new SitioController(); $ctrl->crear(); break;
+    case 'propietario/sitios/editar': $ctrl = new SitioController(); $ctrl->editar(); break;
+    case 'propietario/sitios/eliminar': $ctrl = new SitioController(); $ctrl->eliminar(); break;
+    case 'alojamiento/ver': $ctrl = new SitioController(); $ctrl->ver(); break;
+    case 'admin/afiliaciones': $ctrl = new AdminController(); $ctrl->lista_afiliaciones(); break;
+    case 'admin/afiliaciones/aprobar': $ctrl = new AdminController(); $ctrl->aprobar(); break;
+    case 'admin/afiliaciones/rechazar': $ctrl = new AdminController(); $ctrl->rechazar(); break;
+    case 'admin/alojamientos': $ctrl = new AdminController(); $ctrl->alojamientos(); break;
+    case 'admin/alojamientos/aprobar': $ctrl = new AdminController(); $ctrl->aprobarAlojamiento(); break;
+    case 'admin/alojamientos/rechazar': $ctrl = new AdminController(); $ctrl->rechazarAlojamiento(); break;
+    case 'admin/alojamientos/activar': $ctrl = new AdminController(); $ctrl->activarAlojamiento(); break;
+    case 'admin/alojamientos/desactivar': $ctrl = new AdminController(); $ctrl->desactivarAlojamiento(); break;
     case 'auth/login':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = $_POST['email'] ?? '';
@@ -182,172 +84,7 @@ switch ($ruta) {
             require __DIR__ . '/../vistas/auth/register_afiliado.php';
         }
         break;
-    case 'sembrar':
-        require __DIR__ . '/sembrar_usuarios.php';
-        break;
-    default:
-        $ctrl = new SitioController();
-        $ctrl->inicio();
-        break;
-}
-
-?>
-=======
-function pie() {
-    echo '</main><footer class="site-footer"><div class="container">© ' . date('Y') . ' Turismo San Luis</div></footer></body></html>';
-}
-
-switch ($ruta) {
-    case 'propietario/sitios':
-        $ctrl = new SitioController();
-        $ctrl->lista_propietario();
-        break;
-    case 'propietario/sitios/crear':
-        $ctrl = new SitioController();
-        $ctrl->crear();
-        break;
-    case 'propietario/sitios/editar':
-        $ctrl = new SitioController();
-        $ctrl->editar();
-        break;
-    case 'propietario/sitios/eliminar':
-        $ctrl = new SitioController();
-        $ctrl->eliminar();
-        break;
-    case 'propietario/reservas':
-        $ctrl = new ReservaController();
-        $ctrl->propietarioIndex();
-        break;
-    case 'propietario/reservas/estado':
-        $ctrl = new ReservaController();
-        $ctrl->propietarioEstado();
-        break;
-    case 'alojamiento/ver':
-        $ctrl = new SitioController();
-        $ctrl->ver();
-        break;
-    case 'admin/afiliaciones':
-        $ctrl = new AdminController();
-        $ctrl->lista_afiliaciones();
-        break;
-    case 'admin/afiliaciones/aprobar':
-        $ctrl = new AdminController();
-        $ctrl->aprobar();
-        break;
-    case 'admin/afiliaciones/rechazar':
-        $ctrl = new AdminController();
-        $ctrl->rechazar();
-        break;
-    case 'admin/alojamientos':
-        $ctrl = new AdminController();
-        $ctrl->alojamientos();
-        break;
-    case 'admin/alojamientos/aprobar':
-        $ctrl = new AdminController();
-        $ctrl->aprobarAlojamiento();
-        break;
-    case 'admin/alojamientos/rechazar':
-        $ctrl = new AdminController();
-        $ctrl->rechazarAlojamiento();
-        break;
-    case 'admin/alojamientos/activar':
-        $ctrl = new AdminController();
-        $ctrl->activarAlojamiento();
-        break;
-    case 'admin/alojamientos/desactivar':
-        $ctrl = new AdminController();
-        $ctrl->desactivarAlojamiento();
-        break;
-    case 'admin/servicios':
-        $ctrl = new AdminController();
-        $ctrl->servicios();
-        break;
-    case 'admin/servicios/crear':
-        $ctrl = new AdminController();
-        $ctrl->crearServicio();
-        break;
-    case 'admin/servicios/actualizar':
-        $ctrl = new AdminController();
-        $ctrl->actualizarServicio();
-        break;
-    case 'admin/servicios/eliminar':
-        $ctrl = new AdminController();
-        $ctrl->eliminarServicio();
-        break;
-    case 'admin/reservas':
-        $ctrl = new ReservaController();
-        $ctrl->adminIndex();
-        break;
-    case 'admin/reservas/estado':
-        $ctrl = new ReservaController();
-        $ctrl->adminEstado();
-        break;
-    case 'admin/clientes':
-        $ctrl = new ClienteController();
-        $ctrl->adminIndex();
-        break;
-    case 'admin/clientes/crear':
-        $ctrl = new ClienteController();
-        $ctrl->adminCrear();
-        break;
-    case 'admin/clientes/editar':
-        $ctrl = new ClienteController();
-        $ctrl->adminEditar();
-        break;
-    case 'admin/clientes/eliminar':
-        $ctrl = new ClienteController();
-        $ctrl->adminEliminar();
-        break;
-    case 'cliente/reservar':
-        $ctrl = new ClienteController();
-        $ctrl->reservar();
-        break;
-    case 'cliente/reservas':
-        $ctrl = new ClienteController();
-        $ctrl->misReservas();
-        break;
->>>>>>> theirs
-    case 'auth/login':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $email = $_POST['email'] ?? '';
-            $pass = $_POST['password'] ?? '';
-            if (iniciar_sesion($email, $pass)) {
-                header('Location: index.php');
-                exit;
-            } else {
-                $error = 'Credenciales incorrectas';
-            }
-        }
-        require __DIR__ . '/../vistas/auth/login.php';
-        break;
-    case 'auth/logout':
-        session_unset();
-        session_destroy();
-        header('Location: index.php');
-        exit;
-    case 'auth/register':
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $res = manejar_registro_afiliado();
-            $msg = $res['message'] ?? '';
-            $ok = $res['success'] ?? false;
-            require __DIR__ . '/../vistas/auth/register_afiliado.php';
-        } else {
-            require __DIR__ . '/../vistas/auth/register_afiliado.php';
-        }
-        break;
-<<<<<<< ours
-
     case 'sembrar': require __DIR__ . '/sembrar_usuarios.php'; break;
     default: $ctrl = new SitioController(); $ctrl->inicio(); break;
-=======
-    case 'sembrar':
-        require __DIR__ . '/sembrar_usuarios.php';
-        break;
-    default:
-        $ctrl = new SitioController();
-        $ctrl->inicio();
-        break;
->>>>>>> theirs
 }
-
 ?>

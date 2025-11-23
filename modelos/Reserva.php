@@ -1,5 +1,7 @@
 <?php
 require_once __DIR__ . '/Database.php';
+<?php
+require_once __DIR__ . '/Database.php';
 
 class Reserva {
     private $db;
@@ -24,6 +26,7 @@ class Reserva {
         $stmt->execute([$clienteId]);
         return $stmt->fetchAll();
     }
+
     public function listarParaPropietario($propietarioId, $mes = '') {
         [$inicio, $fin] = $this->rangoMes($mes);
         $params = [$propietarioId];
@@ -131,7 +134,6 @@ class Reserva {
         $this->db->exec($sql);
     }
 }
+
 ?>
-=======
-}
->>>>>>> theirs
+        $this->db->exec($sql);
