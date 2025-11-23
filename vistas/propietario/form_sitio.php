@@ -7,6 +7,19 @@
   <label>Ubicación:<br><input type="text" name="ubicacion" value="<?= htmlspecialchars($sitio['ubicacion'] ?? '') ?>"></label><br><br>
   <label>Precio por noche:<br><input type="number" step="0.01" name="precio_noche" value="<?= htmlspecialchars($sitio['precio_noche'] ?? '') ?>" required></label><br><br>
   <label>Rango de precio:<br><input type="text" name="rango_precio" value="<?= htmlspecialchars($sitio['rango_precio'] ?? '') ?>"></label><br><br>
+  <fieldset class="servicios-fieldset">
+    <legend>Servicios disponibles</legend>
+    <p class="muted">Selecciona los servicios que ofreces para ayudar a los viajeros a elegir tu alojamiento.</p>
+    <div class="servicios-grid">
+      <?php foreach ($serviciosDisponibles as $servicio): ?>
+        <?php $checked = in_array((int)$servicio['id'], $serviciosSeleccionados ?? []); ?>
+        <label class="servicio-chip">
+          <input type="checkbox" name="servicios[]" value="<?= (int)$servicio['id'] ?>" <?= $checked ? 'checked' : '' ?>>
+          <span><?= htmlspecialchars($servicio['nombre']) ?></span>
+        </label>
+      <?php endforeach; ?>
+    </div>
+  </fieldset><br>
   <label>Imagen:<br><input type="file" name="imagen" accept="image/*"></label><br><br>
   <button type="submit">Guardar</button>
 </form>

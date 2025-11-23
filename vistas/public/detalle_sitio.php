@@ -15,6 +15,16 @@
     <?php if (!empty($sitio['rango_precio'])): ?>
       <p class="muted">Rango: <?= htmlspecialchars($sitio['rango_precio']) ?></p>
     <?php endif; ?>
+    <?php if (!empty($sitio['servicios'])): ?>
+      <div class="detalle__servicios">
+        <h3>Servicios incluidos</h3>
+        <div class="service-tags">
+          <?php foreach ($sitio['servicios'] as $servicio): ?>
+            <span class="service-chip"><?= htmlspecialchars($servicio) ?></span>
+          <?php endforeach; ?>
+        </div>
+      </div>
+    <?php endif; ?>
     <div class="detalle__descripcion">
       <h3>Descripción</h3>
       <p><?= nl2br(htmlspecialchars($sitio['descripcion'] ?? '')) ?></p>

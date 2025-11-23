@@ -1,9 +1,15 @@
 <?php
 require_once __DIR__ . '/../modelos/Sitio.php';
+require_once __DIR__ . '/../modelos/Servicio.php';
 
 class SitioController {
     private $modelo;
-    public function __construct() { $this->modelo = new Sitio(); }
+    private $serviciosModelo;
+
+    public function __construct() {
+        $this->modelo = new Sitio();
+        $this->serviciosModelo = new Servicio();
+    }
 
     public function inicio() {
         $sitios = $this->modelo->alojamientosPublicos();
@@ -39,6 +45,7 @@ class SitioController {
                     $imagen = 'storage/subidas/'.$nombreArchivo;
                 }
             }
+            $servicios = array_map('intval', $_POST['servicios'] ?? []);
             $data = [
                 'propietario_id'=>$propietario,
                 'nombre'=>$_POST['nombre']??'',
@@ -49,10 +56,12 @@ class SitioController {
                 'imagen'=>$imagen,
                 'estado'=>'pendiente'
             ];
-            $this->modelo->crearAlojamiento($data);
+            $this->modelo->crearAlojamiento($data, $servicios);
             header('Location: index.php?ruta=propietario/sitios'); exit;
         }
         $sitio = null;
+        $serviciosDisponibles = $this->serviciosModelo->todos();
+        $serviciosSeleccionados = [];
         require __DIR__ . '/../vistas/propietario/form_sitio.php';
     }
 
@@ -74,6 +83,7 @@ class SitioController {
                     $imagen = 'storage/subidas/'.$nombreArchivo;
                 }
             }
+            $servicios = array_map('intval', $_POST['servicios'] ?? []);
             $data = [
                 'nombre'=>$_POST['nombre']??'',
                 'descripcion'=>$_POST['descripcion']??'',
@@ -83,9 +93,11 @@ class SitioController {
                 'imagen'=>$imagen,
                 'estado'=>$sitio['estado']
             ];
-            $this->modelo->actualizarAlojamiento($id,$data);
+            $this->modelo->actualizarAlojamiento($id,$data,$servicios);
             header('Location: index.php?ruta=propietario/sitios'); exit;
         }
+        $serviciosDisponibles = $this->serviciosModelo->todos();
+        $serviciosSeleccionados = $this->modelo->serviciosIds($id);
         require __DIR__ . '/../vistas/propietario/form_sitio.php';
     }
 

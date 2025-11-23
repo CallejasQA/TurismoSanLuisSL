@@ -34,6 +34,17 @@
             <p class="muted"><?= htmlspecialchars($s['ubicacion'] ?: 'Ubicación por definir') ?></p>
             <p class="price">$<?= number_format($s['precio_noche'], 2) ?><span>/noche</span></p>
             <p class="excerpt"><?= htmlspecialchars(mb_strimwidth($s['descripcion'] ?? '', 0, 140, '…')) ?></p>
+            <?php $servicios = $s['servicios'] ?? []; ?>
+            <?php if (!empty($servicios)): ?>
+              <div class="service-tags" aria-label="Servicios destacados">
+                <?php foreach (array_slice($servicios, 0, 6) as $servicio): ?>
+                  <span class="service-chip"><?= htmlspecialchars($servicio) ?></span>
+                <?php endforeach; ?>
+                <?php if (count($servicios) > 6): ?>
+                  <span class="service-chip service-chip--more">+<?= count($servicios) - 6 ?></span>
+                <?php endif; ?>
+              </div>
+            <?php endif; ?>
           </div>
           <div class="card__footer">
             <a class="btn btn-outline" href="index.php?ruta=alojamiento/ver&id=<?= $s['id'] ?>">Ver detalles</a>

@@ -14,6 +14,11 @@ CREATE TABLE usuarios (
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- usuarios base (contraseña: 123456)
+INSERT INTO usuarios (nombre,email,password,rol,estado) VALUES
+('Administrador','admin@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','admin','activo'),
+('Propietario Demo','propietario@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','propietario','activo');
+
 -- perfiles de propietarios
 DROP TABLE IF EXISTS propietarios_perfiles;
 CREATE TABLE propietarios_perfiles (
@@ -54,19 +59,6 @@ CREATE TABLE alojamientos (
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (propietario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- servicios de alojamientos
-DROP TABLE IF EXISTS servicios;
-CREATE TABLE servicios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(150) NOT NULL UNIQUE,
-  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-INSERT INTO servicios (nombre) VALUES
-('WiFi'),('Parqueadero'),('Piscina'),('Cocina'),('Baño privado'),('Agua caliente'),('Televisión'),('Aire acondicionado'),('Ventilador'),
-('Desayuno incluido'),('Recepción 24 horas'),('Zona BBQ'),('Jacuzzi'),('Sauna'),('Restaurante'),('Bar'),('Terraza'),('Jardín'),('Servicio de transporte'),
-('Permitido fumar (zonas designadas)'),('Zona de juegos infantiles'),('Senderos ecológicos'),('Actividades guiadas'),('Hamacas'),('Zona de camping'),('Mascotas permitidas (con/sin costo)'),('Cocina compartida');
 
 -- reservas
 DROP TABLE IF EXISTS reservas;
