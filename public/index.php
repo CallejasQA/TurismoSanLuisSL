@@ -14,6 +14,7 @@ function cabecera($titulo='Turismo San Luis') {
         if (($_SESSION['usuario_rol'] ?? '')==='admin') {
             echo ' | <a href="index.php?ruta=admin/afiliaciones">Afiliaciones</a>';
             echo ' | <a href="index.php?ruta=admin/alojamientos">Alojamientos</a>';
+            echo ' | <a href="index.php?ruta=admin/servicios">Servicios</a>';
         }
         echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
     } else {
@@ -37,6 +38,10 @@ switch ($ruta) {
     case 'admin/alojamientos/rechazar': $ctrl = new AdminController(); $ctrl->rechazarAlojamiento(); break;
     case 'admin/alojamientos/activar': $ctrl = new AdminController(); $ctrl->activarAlojamiento(); break;
     case 'admin/alojamientos/desactivar': $ctrl = new AdminController(); $ctrl->desactivarAlojamiento(); break;
+    case 'admin/servicios': $ctrl = new AdminController(); $ctrl->servicios(); break;
+    case 'admin/servicios/crear': $ctrl = new AdminController(); $ctrl->crearServicio(); break;
+    case 'admin/servicios/actualizar': $ctrl = new AdminController(); $ctrl->actualizarServicio(); break;
+    case 'admin/servicios/eliminar': $ctrl = new AdminController(); $ctrl->eliminarServicio(); break;
     case 'auth/login':
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             $email = $_POST['email'] ?? ''; $pass = $_POST['password'] ?? '';
