@@ -31,6 +31,7 @@
     </div>
     <div class="detalle__actions">
       <a class="btn" href="index.php">Regresar al inicio</a>
+      <a class="btn btn-secondary" href="index.php?ruta=cliente/reservar&id=<?= (int)$sitio['id'] ?>">Solicitar reserva</a>
       <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol']==='propietario'): ?>
         <a class="btn btn-outline" href="index.php?ruta=propietario/sitios">Ir a mis alojamientos</a>
       <?php else: ?>

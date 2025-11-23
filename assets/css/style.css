@@ -13,9 +13,31 @@ nav a { margin-left:12px; color:#555; text-decoration:none; }
 .btn-outline { background:#fff; color:#2d6cdf; border:1px solid #c8d7f5; }
 .btn-outline:hover { background:#ebf2ff; }
 .btn-secondary { background:#1b365d; }
+.btn-secondary:hover { background:#152a4a; }
+.btn-small { padding:6px 10px; font-size:0.9rem; }
 .error { color:#b00020; }
-form input[type=text], form input[type=number], form textarea, form input[type=email], form input[type=password] { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
+form input[type=text], form input[type=number], form textarea, form input[type=email], form input[type=password], form input[type=date], form input[type=tel], form select { width:100%; padding:8px; border:1px solid #ddd; border-radius:6px; box-sizing:border-box; }
 form button { padding:10px 14px; border-radius:6px; border:none; background:#2d6cdf; color:#fff; cursor:pointer; }
+
+.toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:18px 0; }
+.toolbar__actions { display:flex; gap:10px; }
+.table-wrapper { overflow-x:auto; }
+.card__body .table { margin-top:0; }
+.table__actions { display:flex; gap:8px; align-items:center; }
+
+.alert { padding:12px 14px; border-radius:8px; margin-bottom:12px; }
+.alert--error { background:#ffe5e5; color:#a00; border:1px solid #ffc4c4; }
+.pill--success { background:#e6f5ed; color:#1f8f4d; }
+.pill--warning { background:#fff4e5; color:#c47b00; }
+.pill--danger { background:#ffe5e5; color:#b00020; }
+
+.form-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px 16px; }
+.form-grid--compact { grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); }
+.form-group label { display:block; margin-bottom:6px; color:#1b365d; font-weight:600; }
+.form-actions { display:flex; gap:10px; align-items:center; margin-top:10px; flex-wrap:wrap; }
+
+.phone-field { display:flex; gap:8px; align-items:center; }
+.phone-field select { width:120px; }
 
 .hero { background:linear-gradient(135deg,#e9f0ff,#f8fbff); padding:48px 16px; border-radius:16px; margin-bottom:32px; box-shadow:0 12px 30px rgba(45,108,223,0.08); }
 .hero__content { max-width:720px; }

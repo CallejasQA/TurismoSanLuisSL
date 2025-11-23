@@ -14,10 +14,31 @@ CREATE TABLE usuarios (
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- perfiles de clientes
+DROP TABLE IF EXISTS clientes_perfiles;
+CREATE TABLE clientes_perfiles (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  usuario_id INT NOT NULL,
+  primer_nombre VARCHAR(50) NOT NULL,
+  segundo_nombre VARCHAR(50),
+  primer_apellido VARCHAR(50) NOT NULL,
+  cedula VARCHAR(40),
+  telefono_codigo VARCHAR(8) DEFAULT '+57',
+  telefono_numero VARCHAR(40) NOT NULL,
+  municipio_origen VARCHAR(100),
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_cedula_cliente (cedula),
+  FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- usuarios base (contraseña: 123456)
 INSERT INTO usuarios (nombre,email,password,rol,estado) VALUES
 ('Administrador','admin@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','admin','activo'),
-('Propietario Demo','propietario@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','propietario','activo');
+('Propietario Demo','propietario@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','propietario','activo'),
+('Cliente Demo','cliente@turismosl.com','$2y$12$737fzBthKgaZ1uKYhiSZcOYj3SvNdLLKp2ucvvIeI2Yb5S7.Sqmzq','cliente','activo');
+
+INSERT INTO clientes_perfiles (usuario_id, primer_nombre, segundo_nombre, primer_apellido, cedula, telefono_codigo, telefono_numero, municipio_origen)
+VALUES (3,'Cliente','Demo','Turismo','123456789','+57','3001234567','San Luis');
 
 -- perfiles de propietarios
 DROP TABLE IF EXISTS propietarios_perfiles;

@@ -6,6 +6,7 @@ class Sitio {
 
     public function __construct() {
         $this->db = Database::conexion();
+        $this->asegurarTablaServiciosRelacion();
     }
 
     public function obtenerPorPropietario($propietario_id) {
@@ -148,6 +149,23 @@ class Sitio {
         if (empty($cadena)) { return []; }
         $valores = array_filter(array_map('trim', explode('||', $cadena)));
         return array_values($valores);
+    }
+
+    private function asegurarTablaServiciosRelacion() {
+        $stmt = $this->db->query("SHOW TABLES LIKE 'alojamiento_servicio'");
+        if ($stmt->fetch()) { return; }
+
+        $sql = "CREATE TABLE IF NOT EXISTS alojamiento_servicio ("
+             . "id INT AUTO_INCREMENT PRIMARY KEY,"
+             . "alojamiento_id INT NOT NULL,"
+             . "servicio_id INT NOT NULL,"
+             . "UNIQUE KEY uniq_aloj_serv (alojamiento_id, servicio_id),"
+             . "KEY idx_servicio_id (servicio_id),"
+             . "CONSTRAINT fk_aloj_serv_aloj FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,"
+             . "CONSTRAINT fk_aloj_serv_serv FOREIGN KEY (servicio_id) REFERENCES servicios(id) ON DELETE CASCADE"
+             . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $this->db->exec($sql);
     }
 }
 ?>

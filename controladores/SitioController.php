@@ -26,14 +26,14 @@ class SitioController {
 
     public function lista_propietario() {
         $propietario = $_SESSION['usuario_id'] ?? null;
-        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        if (!$propietario || ($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
         $sitios = $this->modelo->obtenerPorPropietario($propietario);
         require __DIR__ . '/../vistas/propietario/lista_sitios.php';
     }
 
     public function crear() {
         $propietario = $_SESSION['usuario_id'] ?? null;
-        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        if (!$propietario || ($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
             $imagen = null;
@@ -67,7 +67,7 @@ class SitioController {
 
     public function editar() {
         $propietario = $_SESSION['usuario_id'] ?? null;
-        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        if (!$propietario || ($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
         $id = $_GET['id'] ?? null;
         if (!$id) { header('Location: index.php?ruta=propietario/sitios'); exit; }
         $sitio = $this->modelo->buscarAlojamiento($id);
@@ -103,7 +103,7 @@ class SitioController {
 
     public function eliminar() {
         $propietario = $_SESSION['usuario_id'] ?? null;
-        if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
+        if (!$propietario || ($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
         $id = $_GET['id'] ?? null;
         if ($id) {
             $sitio = $this->modelo->buscarAlojamiento($id);

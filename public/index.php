@@ -4,17 +4,24 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../controladores/AuthController.php';
 require_once __DIR__ . '/../controladores/SitioController.php';
 require_once __DIR__ . '/../controladores/AdminController.php';
+require_once __DIR__ . '/../controladores/ClienteController.php';
 
 $ruta = $_GET['ruta'] ?? 'inicio';
 
 function cabecera($titulo='Turismo San Luis') {
     echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'.htmlspecialchars($titulo).'</title><link rel="stylesheet" href="../assets/css/style.css"></head><body><header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav><a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a>';
     if (isset($_SESSION['usuario_id'])) {
-        echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
+        if (($_SESSION['usuario_rol'] ?? '')==='propietario') {
+            echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
+        }
+        if (($_SESSION['usuario_rol'] ?? '')==='cliente') {
+            echo ' | <a href="index.php?ruta=cliente/reservas">Mis reservas</a>';
+        }
         if (($_SESSION['usuario_rol'] ?? '')==='admin') {
             echo ' | <a href="index.php?ruta=admin/afiliaciones">Afiliaciones</a>';
             echo ' | <a href="index.php?ruta=admin/alojamientos">Alojamientos</a>';
             echo ' | <a href="index.php?ruta=admin/servicios">Servicios</a>';
+            echo ' | <a href="index.php?ruta=admin/clientes">Clientes</a>';
         }
         echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
     } else {
@@ -42,6 +49,12 @@ switch ($ruta) {
     case 'admin/servicios/crear': $ctrl = new AdminController(); $ctrl->crearServicio(); break;
     case 'admin/servicios/actualizar': $ctrl = new AdminController(); $ctrl->actualizarServicio(); break;
     case 'admin/servicios/eliminar': $ctrl = new AdminController(); $ctrl->eliminarServicio(); break;
+    case 'admin/clientes': $ctrl = new ClienteController(); $ctrl->adminIndex(); break;
+    case 'admin/clientes/crear': $ctrl = new ClienteController(); $ctrl->adminCrear(); break;
+    case 'admin/clientes/editar': $ctrl = new ClienteController(); $ctrl->adminEditar(); break;
+    case 'admin/clientes/eliminar': $ctrl = new ClienteController(); $ctrl->adminEliminar(); break;
+    case 'cliente/reservar': $ctrl = new ClienteController(); $ctrl->reservar(); break;
+    case 'cliente/reservas': $ctrl = new ClienteController(); $ctrl->misReservas(); break;
     case 'auth/login':
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             $email = $_POST['email'] ?? ''; $pass = $_POST['password'] ?? '';
