@@ -5,6 +5,19 @@ class SitioController {
     private $modelo;
     public function __construct() { $this->modelo = new Sitio(); }
 
+    public function inicio() {
+        $sitios = $this->modelo->alojamientosPublicos();
+        require __DIR__ . '/../vistas/public/home.php';
+    }
+
+    public function ver() {
+        $id = $_GET['id'] ?? null;
+        if (!$id) { header('Location: index.php'); exit; }
+        $sitio = $this->modelo->alojamientoPublicado($id);
+        if (!$sitio) { header('Location: index.php'); exit; }
+        require __DIR__ . '/../vistas/public/detalle_sitio.php';
+    }
+
     public function lista_propietario() {
         $propietario = $_SESSION['usuario_id'] ?? null;
         if (!$propietario) { header('Location: index.php?ruta=auth/login'); exit; }
@@ -19,7 +32,8 @@ class SitioController {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
             $imagen = null;
             if (!empty($_FILES['imagen']['name'])) {
-                $dir = __DIR__ . '/../storage/subidas/';
+                $dir = __DIR__ . '/../public/storage/subidas/';
+                if (!is_dir($dir)) { mkdir($dir,0755,true); }
                 $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
                 if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
                     $imagen = 'storage/subidas/'.$nombreArchivo;
@@ -53,7 +67,8 @@ class SitioController {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
             $imagen = $sitio['imagen'] ?? null;
             if (!empty($_FILES['imagen']['name'])) {
-                $dir = __DIR__ . '/../storage/subidas/';
+                $dir = __DIR__ . '/../public/storage/subidas/';
+                if (!is_dir($dir)) { mkdir($dir,0755,true); }
                 $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
                 if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
                     $imagen = 'storage/subidas/'.$nombreArchivo;

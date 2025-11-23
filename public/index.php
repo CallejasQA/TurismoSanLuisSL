@@ -11,7 +11,10 @@ function cabecera($titulo='Turismo San Luis') {
     echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'.htmlspecialchars($titulo).'</title><link rel="stylesheet" href="../assets/css/style.css"></head><body><header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav><a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a>';
     if (isset($_SESSION['usuario_id'])) {
         echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
-        if (($_SESSION['usuario_rol'] ?? '')==='admin') echo ' | <a href="index.php?ruta=admin/afiliaciones">Admin</a>';
+        if (($_SESSION['usuario_rol'] ?? '')==='admin') {
+            echo ' | <a href="index.php?ruta=admin/afiliaciones">Afiliaciones</a>';
+            echo ' | <a href="index.php?ruta=admin/alojamientos">Alojamientos</a>';
+        }
         echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
     } else {
         echo ' | <a href="index.php?ruta=auth/login">Ingresar</a>';
@@ -25,9 +28,15 @@ switch ($ruta) {
     case 'propietario/sitios/crear': $ctrl = new SitioController(); $ctrl->crear(); break;
     case 'propietario/sitios/editar': $ctrl = new SitioController(); $ctrl->editar(); break;
     case 'propietario/sitios/eliminar': $ctrl = new SitioController(); $ctrl->eliminar(); break;
+    case 'alojamiento/ver': $ctrl = new SitioController(); $ctrl->ver(); break;
     case 'admin/afiliaciones': $ctrl = new AdminController(); $ctrl->lista_afiliaciones(); break;
     case 'admin/afiliaciones/aprobar': $ctrl = new AdminController(); $ctrl->aprobar(); break;
     case 'admin/afiliaciones/rechazar': $ctrl = new AdminController(); $ctrl->rechazar(); break;
+    case 'admin/alojamientos': $ctrl = new AdminController(); $ctrl->alojamientos(); break;
+    case 'admin/alojamientos/aprobar': $ctrl = new AdminController(); $ctrl->aprobarAlojamiento(); break;
+    case 'admin/alojamientos/rechazar': $ctrl = new AdminController(); $ctrl->rechazarAlojamiento(); break;
+    case 'admin/alojamientos/activar': $ctrl = new AdminController(); $ctrl->activarAlojamiento(); break;
+    case 'admin/alojamientos/desactivar': $ctrl = new AdminController(); $ctrl->desactivarAlojamiento(); break;
     case 'auth/login':
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             $email = $_POST['email'] ?? ''; $pass = $_POST['password'] ?? '';
@@ -45,6 +54,6 @@ switch ($ruta) {
         }
         break;
     case 'sembrar': require __DIR__ . '/sembrar_usuarios.php'; break;
-    default: cabecera('Inicio'); echo '<h1>Bienvenido a Turismo San Luis</h1><p>Plataforma de demostración.</p>'; pie(); break;
+    default: $ctrl = new SitioController(); $ctrl->inicio(); break;
 }
 ?>
