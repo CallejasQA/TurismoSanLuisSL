@@ -6,7 +6,11 @@
     </div>
     <form class="toolbar__actions" method="get" action="index.php">
       <input type="hidden" name="ruta" value="propietario/reservas">
+<<<<<<< ours
       <input type="month" name="mes" value="<?= htmlspecialchars($_GET['mes'] ?? '') ?>">
+=======
+      <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
+>>>>>>> theirs
       <button type="submit">Filtrar</button>
     </form>
   </div>

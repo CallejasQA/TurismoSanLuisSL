@@ -7,6 +7,10 @@ class Reserva {
     public function __construct() {
         $this->db = Database::conexion();
 <<<<<<< ours
+<<<<<<< ours
+=======
+        $this->asegurarTablaReservas();
+>>>>>>> theirs
 =======
         $this->asegurarTablaReservas();
 >>>>>>> theirs
@@ -28,7 +32,10 @@ class Reserva {
         return $stmt->fetchAll();
     }
 <<<<<<< ours
+<<<<<<< ours
 =======
+=======
+>>>>>>> theirs
 
     public function listarParaPropietario($propietarioId, $mes = '') {
         [$inicio, $fin] = $this->rangoMes($mes);
@@ -114,7 +121,13 @@ class Reserva {
 
     private function asegurarTablaReservas() {
         $stmt = $this->db->query("SHOW TABLES LIKE 'reservas'");
+<<<<<<< ours
         if ($stmt->fetch()) { return; }
+=======
+        if ($stmt->fetch()) {
+            return;
+        }
+>>>>>>> theirs
 
         $sql = "CREATE TABLE IF NOT EXISTS reservas ("
              . "id INT AUTO_INCREMENT PRIMARY KEY,"
@@ -134,6 +147,10 @@ class Reserva {
 
         $this->db->exec($sql);
     }
+<<<<<<< ours
 >>>>>>> theirs
 }
 ?>
+=======
+}
+>>>>>>> theirs

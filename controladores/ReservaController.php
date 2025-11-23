@@ -10,10 +10,13 @@ class ReservaController {
 
     public function adminIndex() {
         $this->soloAdmin();
-        $mes = $_GET['mes'] ?? '';
-        $propietario = isset($_GET['propietario']) && $_GET['propietario'] !== '' ? (int) $_GET['propietario'] : null;
-        $reservas = $this->reservaModelo->listarParaAdmin($mes, $propietario);
-        $propietarios = $this->reservaModelo->propietariosConReservas();
+    $mes = $this->mesSeguro($_GET['mes'] ?? '');
+    $propietario = isset($_GET['propietario']) && $_GET['propietario'] !== '' ? (int) $_GET['propietario'] : null;
+
+    $reservas = $this->reservaModelo->listarParaAdmin($mes, $propietario);
+    $propietarios = $this->reservaModelo->propietariosConReservas();
+    $mesSeleccionado = $mes;
+    $propietarioSeleccionado = $propietario;
         require __DIR__ . '/../vistas/admin/reservas.php';
     }
 
@@ -31,8 +34,9 @@ class ReservaController {
 
     public function propietarioIndex() {
         $this->soloPropietario();
-        $mes = $_GET['mes'] ?? '';
-        $reservas = $this->reservaModelo->listarParaPropietario($_SESSION['usuario_id'], $mes);
+    $mes = $this->mesSeguro($_GET['mes'] ?? '');
+    $reservas = $this->reservaModelo->listarParaPropietario($_SESSION['usuario_id'], $mes);
+    $mesSeleccionado = $mes;
         require __DIR__ . '/../vistas/propietario/reservas.php';
     }
 
@@ -54,6 +58,11 @@ class ReservaController {
 
     private function soloPropietario() {
         if (($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
+    }
+
+    private function mesSeguro($mes) {
+        $mes = substr(trim($mes), 0, 7);
+        return preg_match('/^\d{4}-\d{2}$/', $mes) ? $mes : '';
     }
 }
 ?>
