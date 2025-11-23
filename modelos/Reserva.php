@@ -6,6 +6,10 @@ class Reserva {
 
     public function __construct() {
         $this->db = Database::conexion();
+<<<<<<< ours
+=======
+        $this->asegurarTablaReservas();
+>>>>>>> theirs
     }
 
     public function crear($alojamientoId, $clienteId, $fechaInicio, $fechaFin, $total) {
@@ -23,5 +27,113 @@ class Reserva {
         $stmt->execute([$clienteId]);
         return $stmt->fetchAll();
     }
+<<<<<<< ours
+=======
+
+    public function listarParaPropietario($propietarioId, $mes = '') {
+        [$inicio, $fin] = $this->rangoMes($mes);
+        $params = [$propietarioId];
+        $filtroMes = '';
+        if ($inicio && $fin) {
+            $filtroMes = ' AND r.fecha_inicio BETWEEN ? AND ?';
+            $params[] = $inicio;
+            $params[] = $fin;
+        }
+
+        $sql = "SELECT r.*, a.nombre AS alojamiento, a.ubicacion, cu.email AS cliente_email, "
+             . "COALESCE(cp.primer_nombre, cu.nombre) AS cliente_nombre, cp.primer_apellido AS cliente_apellido "
+             . "FROM reservas r "
+             . "JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "JOIN usuarios cu ON cu.id = r.cliente_id "
+             . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
+             . "WHERE a.propietario_id = ?" . $filtroMes
+             . " ORDER BY r.fecha_inicio DESC, r.creado_en DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function listarParaAdmin($mes = '', $propietarioId = null) {
+        [$inicio, $fin] = $this->rangoMes($mes);
+        $params = [];
+        $filtro = '';
+        if ($propietarioId) {
+            $filtro .= ' AND a.propietario_id = ?';
+            $params[] = $propietarioId;
+        }
+        if ($inicio && $fin) {
+            $filtro .= ' AND r.fecha_inicio BETWEEN ? AND ?';
+            $params[] = $inicio;
+            $params[] = $fin;
+        }
+
+        $sql = "SELECT r.*, a.nombre AS alojamiento, a.ubicacion, a.propietario_id, ap.email AS propietario_email, "
+             . "cu.email AS cliente_email, COALESCE(cp.primer_nombre, cu.nombre) AS cliente_nombre, cp.primer_apellido AS cliente_apellido "
+             . "FROM reservas r "
+             . "JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "JOIN usuarios ap ON ap.id = a.propietario_id "
+             . "JOIN usuarios cu ON cu.id = r.cliente_id "
+             . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
+             . "WHERE 1=1" . $filtro
+             . " ORDER BY r.fecha_inicio DESC, r.creado_en DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function cambiarEstado($id, $estado, $propietarioId = null) {
+        $estado = in_array($estado, ['pendiente','confirmada','cancelada']) ? $estado : 'pendiente';
+        $params = [$estado, $id];
+        $filtro = '';
+        if ($propietarioId) {
+            $filtro = ' AND a.propietario_id = ?';
+            $params[] = $propietarioId;
+        }
+        $sql = "UPDATE reservas r JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "SET r.estado = ? WHERE r.id = ?" . $filtro . " LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+    public function propietariosConReservas() {
+        $sql = "SELECT DISTINCT a.propietario_id AS id, u.email "
+             . "FROM reservas r JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "JOIN usuarios u ON u.id = a.propietario_id "
+             . "ORDER BY u.email";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+    private function rangoMes($mes) {
+        if (!preg_match('/^\d{4}-\d{2}$/', $mes)) {
+            return [null, null];
+        }
+        $inicio = $mes . '-01';
+        $fin = date('Y-m-t', strtotime($inicio));
+        return [$inicio, $fin];
+    }
+
+    private function asegurarTablaReservas() {
+        $stmt = $this->db->query("SHOW TABLES LIKE 'reservas'");
+        if ($stmt->fetch()) { return; }
+
+        $sql = "CREATE TABLE IF NOT EXISTS reservas ("
+             . "id INT AUTO_INCREMENT PRIMARY KEY,"
+             . "alojamiento_id INT NOT NULL,"
+             . "cliente_id INT NOT NULL,"
+             . "fecha_inicio DATE NOT NULL,"
+             . "fecha_fin DATE NOT NULL,"
+             . "total DECIMAL(12,2) NOT NULL,"
+             . "estado ENUM('pendiente','confirmada','cancelada') DEFAULT 'pendiente',"
+             . "creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+             . "KEY idx_alojamiento (alojamiento_id),"
+             . "KEY idx_cliente (cliente_id),"
+             . "KEY idx_fecha_inicio (fecha_inicio),"
+             . "CONSTRAINT fk_reserva_aloj FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,"
+             . "CONSTRAINT fk_reserva_cliente FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE"
+             . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+        $this->db->exec($sql);
+    }
+>>>>>>> theirs
 }
 ?>

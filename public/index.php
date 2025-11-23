@@ -5,6 +5,7 @@ require_once __DIR__ . '/../controladores/AuthController.php';
 require_once __DIR__ . '/../controladores/SitioController.php';
 require_once __DIR__ . '/../controladores/AdminController.php';
 require_once __DIR__ . '/../controladores/ClienteController.php';
+require_once __DIR__ . '/../controladores/ReservaController.php';
 
 $ruta = $_GET['ruta'] ?? 'inicio';
 
@@ -13,6 +14,7 @@ function cabecera($titulo='Turismo San Luis') {
     if (isset($_SESSION['usuario_id'])) {
         if (($_SESSION['usuario_rol'] ?? '')==='propietario') {
             echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
+            echo ' | <a href="index.php?ruta=propietario/reservas">Reservas</a>';
         }
         if (($_SESSION['usuario_rol'] ?? '')==='cliente') {
             echo ' | <a href="index.php?ruta=cliente/reservas">Mis reservas</a>';
@@ -22,6 +24,7 @@ function cabecera($titulo='Turismo San Luis') {
             echo ' | <a href="index.php?ruta=admin/alojamientos">Alojamientos</a>';
             echo ' | <a href="index.php?ruta=admin/servicios">Servicios</a>';
             echo ' | <a href="index.php?ruta=admin/clientes">Clientes</a>';
+            echo ' | <a href="index.php?ruta=admin/reservas">Reservas</a>';
         }
         echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
     } else {
@@ -29,14 +32,22 @@ function cabecera($titulo='Turismo San Luis') {
     }
     echo '</nav></div></header><main class="container">';
 }
+
 function pie() { echo '</main><footer class="site-footer"><div class="container">© '.date('Y').' Turismo San Luis</div></footer></body></html>'; }
 
 switch ($ruta) {
+    // Propietario
     case 'propietario/sitios': $ctrl = new SitioController(); $ctrl->lista_propietario(); break;
     case 'propietario/sitios/crear': $ctrl = new SitioController(); $ctrl->crear(); break;
     case 'propietario/sitios/editar': $ctrl = new SitioController(); $ctrl->editar(); break;
     case 'propietario/sitios/eliminar': $ctrl = new SitioController(); $ctrl->eliminar(); break;
+    case 'propietario/reservas': $ctrl = new ReservaController(); $ctrl->propietarioIndex(); break;
+    case 'propietario/reservas/estado': $ctrl = new ReservaController(); $ctrl->propietarioEstado(); break;
+
+    // Sitios públicos
     case 'alojamiento/ver': $ctrl = new SitioController(); $ctrl->ver(); break;
+
+    // Admin
     case 'admin/afiliaciones': $ctrl = new AdminController(); $ctrl->lista_afiliaciones(); break;
     case 'admin/afiliaciones/aprobar': $ctrl = new AdminController(); $ctrl->aprobar(); break;
     case 'admin/afiliaciones/rechazar': $ctrl = new AdminController(); $ctrl->rechazar(); break;
@@ -49,12 +60,18 @@ switch ($ruta) {
     case 'admin/servicios/crear': $ctrl = new AdminController(); $ctrl->crearServicio(); break;
     case 'admin/servicios/actualizar': $ctrl = new AdminController(); $ctrl->actualizarServicio(); break;
     case 'admin/servicios/eliminar': $ctrl = new AdminController(); $ctrl->eliminarServicio(); break;
+    case 'admin/reservas': $ctrl = new ReservaController(); $ctrl->adminIndex(); break;
+    case 'admin/reservas/estado': $ctrl = new ReservaController(); $ctrl->adminEstado(); break;
     case 'admin/clientes': $ctrl = new ClienteController(); $ctrl->adminIndex(); break;
     case 'admin/clientes/crear': $ctrl = new ClienteController(); $ctrl->adminCrear(); break;
     case 'admin/clientes/editar': $ctrl = new ClienteController(); $ctrl->adminEditar(); break;
     case 'admin/clientes/eliminar': $ctrl = new ClienteController(); $ctrl->adminEliminar(); break;
+
+    // Cliente
     case 'cliente/reservar': $ctrl = new ClienteController(); $ctrl->reservar(); break;
     case 'cliente/reservas': $ctrl = new ClienteController(); $ctrl->misReservas(); break;
+
+    // Auth
     case 'auth/login':
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             $email = $_POST['email'] ?? ''; $pass = $_POST['password'] ?? '';
@@ -71,6 +88,7 @@ switch ($ruta) {
             require __DIR__ . '/../vistas/auth/register_afiliado.php';
         }
         break;
+
     case 'sembrar': require __DIR__ . '/sembrar_usuarios.php'; break;
     default: $ctrl = new SitioController(); $ctrl->inicio(); break;
 }
