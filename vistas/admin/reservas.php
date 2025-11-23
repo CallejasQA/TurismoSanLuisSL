@@ -9,8 +9,7 @@
       <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
       <select name="propietario">
         <option value="">Todos los propietarios</option>
-        <?php foreach ($propietarios as $p):
-          $sel = ($propietarioSeleccionado ?? null) !== null && (int)$propietarioSeleccionado === (int)$p['id']; ?>
+        <?php foreach ($propietarios as $p): $sel = ($propietarioSeleccionado ?? null) !== null && (int)$propietarioSeleccionado === (int)$p['id']; ?>
           <option value="<?= (int)$p['id'] ?>" <?= $sel ? 'selected' : '' ?>><?= htmlspecialchars($p['email']) ?></option>
         <?php endforeach; ?>
       </select>

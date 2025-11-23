@@ -1,7 +1,5 @@
 <?php
 require_once __DIR__ . '/Database.php';
-<?php
-require_once __DIR__ . '/Database.php';
 
 class Reserva {
     private $db;
@@ -136,4 +134,3 @@ class Reserva {
 }
 
 ?>
-        $this->db->exec($sql);

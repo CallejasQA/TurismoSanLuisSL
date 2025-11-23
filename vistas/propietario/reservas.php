@@ -5,8 +5,8 @@
       <p class="muted">Filtra por mes y responde rápidamente a tus huéspedes.</p>
     </div>
     <form class="toolbar__actions" method="get" action="index.php">
-  <input type="hidden" name="ruta" value="propietario/reservas">
-  <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
+      <input type="hidden" name="ruta" value="propietario/reservas">
+      <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
       <button type="submit">Filtrar</button>
     </form>
   </div>
