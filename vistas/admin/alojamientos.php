@@ -4,13 +4,14 @@
   <p>No hay alojamientos cargados.</p>
 <?php else: ?>
 <table class="table">
-  <tr><th>ID</th><th>Nombre</th><th>Propietario</th><th>Estado</th><th>Creado</th><th>Acciones</th></tr>
+  <tr><th>ID</th><th>Nombre</th><th>Propietario</th><th>Estado</th><th>Carrusel</th><th>Creado</th><th>Acciones</th></tr>
   <?php foreach($alojamientos as $a): ?>
   <tr>
     <td><?= htmlspecialchars($a['id']) ?></td>
     <td><?= htmlspecialchars($a['nombre']) ?></td>
     <td><?= htmlspecialchars($a['correo_propietario'] ?? '') ?></td>
     <td><?= htmlspecialchars($a['estado']) ?></td>
+    <td><?= !empty($a['destacado_slider']) ? 'Sí' : 'No' ?></td>
     <td><?= htmlspecialchars($a['creado_en'] ?? '') ?></td>
     <td>
       <?php if ($a['estado']==='pendiente' || $a['estado']==='rechazado'): ?>
@@ -24,6 +25,13 @@
       <?php endif; ?>
       <?php if ($a['estado']==='activo'): ?>
         <a class="btn btn-danger" href="index.php?ruta=admin/alojamientos/desactivar&id=<?= $a['id'] ?>">Desactivar</a>
+      <?php endif; ?>
+      <?php if (in_array($a['estado'], ['aprobado','activo'])): ?>
+        <?php if (!empty($a['destacado_slider'])): ?>
+          <a class="btn btn-outline" href="index.php?ruta=admin/alojamientos/slider&accion=quitar&id=<?= $a['id'] ?>">Quitar del carrusel</a>
+        <?php else: ?>
+          <a class="btn btn-secondary" href="index.php?ruta=admin/alojamientos/slider&accion=agregar&id=<?= $a['id'] ?>">Añadir al carrusel</a>
+        <?php endif; ?>
       <?php endif; ?>
     </td>
   </tr>

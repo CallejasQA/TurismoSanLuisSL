@@ -76,6 +76,7 @@ CREATE TABLE alojamientos (
   precio_noche DECIMAL(10,2) NOT NULL DEFAULT 0,
   rango_precio VARCHAR(50),
   imagen VARCHAR(255),
+  destacado_slider TINYINT(1) NOT NULL DEFAULT 0,
   estado ENUM('pendiente','aprobado','rechazado','inactivo','activo') DEFAULT 'pendiente',
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (propietario_id) REFERENCES usuarios(id) ON DELETE CASCADE

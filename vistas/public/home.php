@@ -1,4 +1,44 @@
 <?php cabecera('Turismo San Luis'); ?>
+
+<?php if (!empty($slider)): ?>
+<section class="highlight-slider" aria-label="Alojamientos destacados">
+  <div class="slider__header">
+    <div>
+      <p class="eyebrow">Recomendados</p>
+      <h2>Explora el carrusel de alojamientos</h2>
+      <p class="lede">Selección curada por el administrador para inspirar tu próxima visita.</p>
+    </div>
+    <div class="slider__controls" data-slider-controls>
+      <button class="slider__button" data-dir="prev" aria-label="Anterior">‹</button>
+      <button class="slider__button" data-dir="next" aria-label="Siguiente">›</button>
+    </div>
+  </div>
+  <div class="slider" data-slider>
+    <div class="slider__track" data-track>
+      <?php foreach ($slider as $destacado): ?>
+        <article class="slide-card">
+          <?php if (!empty($destacado['imagen'])): ?>
+            <img src="<?= htmlspecialchars($destacado['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($destacado['nombre']) ?>">
+          <?php else: ?>
+            <div class="slide-card__placeholder">Sin imagen</div>
+          <?php endif; ?>
+          <div class="slide-card__body">
+            <p class="pill pill--ghost">Carrusel</p>
+            <h3><?= htmlspecialchars($destacado['nombre']) ?></h3>
+            <p class="muted"><?= htmlspecialchars($destacado['ubicacion'] ?: 'Ubicación por definir') ?></p>
+            <p class="price price--lg">$<?= number_format($destacado['precio_noche'], 2) ?><span>/noche</span></p>
+            <?php if (!empty($destacado['nombre_negocio'])): ?>
+              <p class="muted">Operado por <?= htmlspecialchars($destacado['nombre_negocio']) ?></p>
+            <?php endif; ?>
+            <a class="btn" href="index.php?ruta=alojamiento/ver&id=<?= $destacado['id'] ?>">Ver detalles</a>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <section class="hero">
   <div class="hero__content">
     <p class="eyebrow">Explora San Luis</p>
@@ -60,4 +100,35 @@
     </div>
   <?php endif; ?>
 </section>
+<?php if (!empty($slider)): ?>
+<script>
+  (function() {
+    const slider = document.querySelector('[data-slider]');
+    if (!slider) return;
+    const track = slider.querySelector('[data-track]');
+    const slides = Array.from(track.children);
+    if (slides.length === 0) return;
+
+    let index = 0;
+    const update = () => {
+      track.style.transform = `translateX(-${index * 100}%)`;
+    };
+
+    const goNext = () => { index = (index + 1) % slides.length; update(); };
+    const goPrev = () => { index = (index - 1 + slides.length) % slides.length; update(); };
+
+    const controls = document.querySelector('[data-slider-controls]');
+    if (controls) {
+      const nextBtn = controls.querySelector('[data-dir="next"]');
+      const prevBtn = controls.querySelector('[data-dir="prev"]');
+      if (nextBtn) nextBtn.addEventListener('click', goNext);
+      if (prevBtn) prevBtn.addEventListener('click', goPrev);
+    }
+
+    let interval = setInterval(goNext, 7000);
+    slider.addEventListener('mouseenter', () => clearInterval(interval));
+    slider.addEventListener('mouseleave', () => interval = setInterval(goNext, 7000));
+  })();
+</script>
+<?php endif; ?>
 <?php pie(); ?>

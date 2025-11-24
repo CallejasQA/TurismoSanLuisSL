@@ -19,6 +19,7 @@ class SitioController {
 
     public function inicio() {
         $sitios = $this->modelo->alojamientosPublicos();
+        $slider = $this->modelo->alojamientosSlider();
         require __DIR__ . '/../vistas/public/home.php';
     }
 

@@ -65,6 +65,17 @@ class AdminController {
         header('Location: index.php?ruta=admin/alojamientos'); exit;
     }
 
+    public function sliderAlojamiento() {
+        if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
+        $id = $_GET['id'] ?? null;
+        $accion = $_GET['accion'] ?? '';
+        if ($id) {
+            $activar = $accion === 'agregar';
+            $this->modelo->marcarEnSlider($id, $activar);
+        }
+        header('Location: index.php?ruta=admin/alojamientos'); exit;
+    }
+
     public function servicios() {
         if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
         $this->serviciosModelo->sembrarInicial($this->serviciosBase);

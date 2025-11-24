@@ -121,6 +121,10 @@ switch ($ruta) {
         $ctrl = new AdminController();
         $ctrl->desactivarAlojamiento();
         break;
+    case 'admin/alojamientos/slider':
+        $ctrl = new AdminController();
+        $ctrl->sliderAlojamiento();
+        break;
     case 'admin/servicios':
         $ctrl = new AdminController();
         $ctrl->servicios();

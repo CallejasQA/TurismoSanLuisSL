@@ -7,6 +7,7 @@ class Sitio {
     public function __construct() {
         $this->db = Database::conexion();
         $this->asegurarTablaServiciosRelacion();
+        $this->asegurarColumnaSlider();
     }
 
     public function obtenerPorPropietario($propietario_id) {
@@ -71,7 +72,7 @@ class Sitio {
     }
 
     public function alojamientosPublicos() {
-        $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, "
+        $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, a.destacado_slider, "
              . "af.nombre_negocio AS nombre_negocio, "
              . "GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios "
              . "FROM alojamientos a "
@@ -83,6 +84,23 @@ class Sitio {
              . "ORDER BY a.creado_en DESC";
         $stmt = $this->db->query($sql);
         return array_map([$this, 'adjuntarServicios'], $stmt->fetchAll());
+    }
+
+    public function marcarEnSlider($id, $activo) {
+        $stmt = $this->db->prepare("UPDATE alojamientos SET destacado_slider = ? WHERE id = ? AND estado IN ('aprobado','activo')");
+        $stmt->execute([(int) $activo, $id]);
+        return $stmt->rowCount() > 0;
+    }
+
+    public function alojamientosSlider() {
+        $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.imagen, a.estado, "
+             . "af.nombre_negocio AS nombre_negocio "
+             . "FROM alojamientos a "
+             . "LEFT JOIN afiliados af ON af.usuario_id = a.propietario_id AND af.estado = 'aprobado' "
+             . "WHERE a.estado IN ('aprobado','activo') AND a.destacado_slider = 1 "
+             . "ORDER BY a.creado_en DESC LIMIT 10";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll();
     }
 
     public function alojamientoPublicado($id) {
@@ -102,7 +120,7 @@ class Sitio {
     }
 
     public function alojamientosParaRevision() {
-        $sql = "SELECT a.*, u.email AS correo_propietario, GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios "
+        $sql = "SELECT a.*, u.email AS correo_propietario, GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios  "
              . "FROM alojamientos a "
              . "JOIN usuarios u ON u.id = a.propietario_id "
              . "LEFT JOIN alojamiento_servicio als ON als.alojamiento_id = a.id "
@@ -170,6 +188,12 @@ class Sitio {
              . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
         $this->db->exec($sql);
+    }
+
+    private function asegurarColumnaSlider() {
+        $stmt = $this->db->query("SHOW COLUMNS FROM alojamientos LIKE 'destacado_slider'");
+        if ($stmt->fetch()) { return; }
+        $this->db->exec("ALTER TABLE alojamientos ADD COLUMN destacado_slider TINYINT(1) NOT NULL DEFAULT 0 AFTER imagen");
     }
 }
 ?>

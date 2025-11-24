@@ -89,3 +89,16 @@ form button { padding:10px 14px; border-radius:6px; border:none; background:#2d6
 .service-tags { display:flex; flex-wrap:wrap; gap:8px; margin-top:10px; }
 .service-chip { display:inline-block; background:linear-gradient(135deg,#edf2ff,#f8fbff); color:#1f4fa3; padding:6px 10px; border-radius:999px; font-weight:600; font-size:0.85rem; border:1px solid #d8e4ff; box-shadow:0 6px 12px rgba(45,108,223,0.08); }
 .service-chip--more { background:#1f5ac2; color:#fff; border-color:#1f5ac2; }
+.highlight-slider { background:#fff; border-radius:16px; padding:18px; margin-bottom:20px; box-shadow:0 12px 30px rgba(45,108,223,0.08); overflow:hidden; }
+.slider__header { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+.slider__controls { display:flex; gap:8px; }
+.slider__button { width:42px; height:42px; border-radius:50%; border:1px solid #dce6ff; background:#f6f8ff; color:#1b365d; font-size:1.3rem; cursor:pointer; transition:all .15s ease; }
+.slider__button:hover { background:#e6edff; border-color:#c5d4ff; }
+.slider { position:relative; overflow:hidden; border-radius:12px; }
+.slider__track { display:flex; transition:transform .4s ease; }
+.slide-card { min-width:100%; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); align-items:stretch; gap:12px; background:linear-gradient(135deg,#f6f9ff,#edf2ff); padding:14px; }
+.slide-card img { width:100%; height:260px; object-fit:cover; border-radius:12px; box-shadow:0 10px 20px rgba(0,0,0,0.08); }
+.slide-card__placeholder { display:flex; align-items:center; justify-content:center; height:260px; background:#dfe8ff; color:#1b365d; border-radius:12px; font-weight:700; letter-spacing:0.05em; }
+.slide-card__body { display:flex; flex-direction:column; gap:8px; padding:6px; }
+.pill--ghost { background:rgba(31,90,194,0.1); color:#1f5ac2; border:1px solid rgba(31,90,194,0.25); }
+.slide-card .btn { align-self:flex-start; }
