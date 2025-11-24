@@ -83,6 +83,7 @@ class Reserva {
     }
 
     public function cambiarEstado($id, $estado, $propietarioId = null) {
+        $estado = strtolower(trim($estado));
         $estado = in_array($estado, ['pendiente','confirmada','cancelada','finalizada']) ? $estado : 'pendiente';
         $params = [$estado, $id];
         $filtro = '';
