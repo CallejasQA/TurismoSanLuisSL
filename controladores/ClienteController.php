@@ -132,7 +132,7 @@ class ClienteController {
 
         $alojamientoId = (int) $reserva['alojamiento_id'];
         $errores = [];
-        if ($reserva['estado'] !== 'finalizada') {
+        if (strtolower($reserva['estado']) !== 'finalizada') {
             $errores[] = 'Solo puedes calificar reservas finalizadas.';
         }
         if ($this->valoracionModelo->existeParaReserva($reservaId, $_SESSION['usuario_id'])) {
@@ -147,8 +147,13 @@ class ClienteController {
         }
 
         $comentarioLimpio = substr($comentario, 0, 1000);
-        $this->valoracionModelo->crear($reservaId, $alojamientoId, $_SESSION['usuario_id'], $estrellas, $comentarioLimpio);
-        header('Location: index.php?ruta=alojamiento/ver&id=' . $alojamientoId . '&exito=1'); exit;
+        $creada = $this->valoracionModelo->crear($reservaId, $alojamientoId, $_SESSION['usuario_id'], $estrellas, $comentarioLimpio);
+        if ($creada) {
+            header('Location: index.php?ruta=alojamiento/ver&id=' . $alojamientoId . '&exito=1'); exit;
+        }
+
+        $mensaje = urlencode('No se pudo guardar tu calificación. Intenta nuevamente.');
+        header('Location: index.php?ruta=alojamiento/ver&id=' . $alojamientoId . '&error=' . $mensaje); exit;
     }
 
     private function valoresBase() {

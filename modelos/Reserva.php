@@ -3,6 +3,7 @@ require_once __DIR__ . '/Database.php';
 
 class Reserva {
     private $db;
+    private $estadosPermitidos = ['pendiente','confirmada','cancelada','finalizada'];
 
     public function __construct() {
         $this->db = Database::conexion();
@@ -84,7 +85,7 @@ class Reserva {
 
     public function cambiarEstado($id, $estado, $propietarioId = null) {
         $estado = strtolower(trim($estado));
-        $estado = in_array($estado, ['pendiente','confirmada','cancelada','finalizada']) ? $estado : 'pendiente';
+        $estado = in_array($estado, $this->estadosPermitidos, true) ? $estado : 'pendiente';
         $params = [$estado, $id];
         $filtro = '';
         if ($propietarioId) {
@@ -124,27 +125,40 @@ class Reserva {
 
     private function asegurarTablaReservas() {
         $stmt = $this->db->query("SHOW TABLES LIKE 'reservas'");
-        if ($stmt->fetch()) {
+        if (!$stmt->fetch()) {
+            $sql = "CREATE TABLE IF NOT EXISTS reservas ("
+                 . "id INT AUTO_INCREMENT PRIMARY KEY,"
+                 . "alojamiento_id INT NOT NULL,"
+                 . "cliente_id INT NOT NULL,"
+                 . "fecha_inicio DATE NOT NULL,"
+                 . "fecha_fin DATE NOT NULL,"
+                 . "total DECIMAL(12,2) NOT NULL,"
+                 . "estado ENUM('pendiente','confirmada','cancelada','finalizada') DEFAULT 'pendiente',"
+                 . "creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
+                 . "KEY idx_alojamiento (alojamiento_id),"
+                 . "KEY idx_cliente (cliente_id),"
+                 . "KEY idx_fecha_inicio (fecha_inicio),"
+                 . "CONSTRAINT fk_reserva_aloj FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,"
+                 . "CONSTRAINT fk_reserva_cliente FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE"
+                 . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+
+            $this->db->exec($sql);
             return;
         }
 
-        $sql = "CREATE TABLE IF NOT EXISTS reservas ("
-             . "id INT AUTO_INCREMENT PRIMARY KEY,"
-             . "alojamiento_id INT NOT NULL,"
-             . "cliente_id INT NOT NULL,"
-             . "fecha_inicio DATE NOT NULL,"
-             . "fecha_fin DATE NOT NULL,"
-             . "total DECIMAL(12,2) NOT NULL,"
-             . "estado ENUM('pendiente','confirmada','cancelada','finalizada') DEFAULT 'pendiente',"
-             . "creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
-             . "KEY idx_alojamiento (alojamiento_id),"
-             . "KEY idx_cliente (cliente_id),"
-             . "KEY idx_fecha_inicio (fecha_inicio),"
-             . "CONSTRAINT fk_reserva_aloj FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,"
-             . "CONSTRAINT fk_reserva_cliente FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE"
-             . ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
+        $columnaEstado = $this->db->query("SHOW COLUMNS FROM reservas LIKE 'estado'")->fetch();
+        if ($columnaEstado && isset($columnaEstado['Type'])) {
+            $tipo = strtolower($columnaEstado['Type']);
+            $faltantes = array_filter($this->estadosPermitidos, function ($estado) use ($tipo) {
+                return strpos($tipo, "'{$estado}'") === false;
+            });
 
-        $this->db->exec($sql);
+            if (!empty($faltantes)) {
+                $enumLista = "'" . implode("','", $this->estadosPermitidos) . "'";
+                $sql = "ALTER TABLE reservas MODIFY estado ENUM({$enumLista}) DEFAULT 'pendiente'";
+                $this->db->exec($sql);
+            }
+        }
     }
 }
 
