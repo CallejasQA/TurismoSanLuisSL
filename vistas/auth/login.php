@@ -7,4 +7,5 @@
   <button type="submit">Ingresar</button>
 </form>
 <p><a href="index.php?ruta=auth/register">¿Eres propietario? Afíliate</a></p>
+<p><a href="index.php?ruta=auth/register-cliente">¿Aún no tienes cuenta? Regístrate como cliente</a></p>
 <?php pie(); ?>

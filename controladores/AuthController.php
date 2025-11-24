@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../modelos/Database.php';
+require_once __DIR__ . '/../modelos/Cliente.php';
 
 function iniciar_sesion($email,$password) {
     $pdo = Database::conexion();
@@ -37,6 +38,60 @@ function manejar_registro_afiliado() {
         return ['success'=>true,'message'=>'Solicitud enviada. Un administrador la revisará.'];
     } catch (Exception $e) {
         return ['success'=>false,'message'=>'Error: '.$e->getMessage()];
+    }
+}
+
+function manejar_registro_cliente() {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') return false;
+
+    $clienteModelo = new Cliente();
+    $valores = [
+        'primer_nombre' => trim($_POST['primer_nombre'] ?? ''),
+        'segundo_nombre' => trim($_POST['segundo_nombre'] ?? ''),
+        'primer_apellido' => trim($_POST['primer_apellido'] ?? ''),
+        'cedula' => trim($_POST['cedula'] ?? ''),
+        'telefono_codigo' => trim($_POST['telefono_codigo'] ?? '+57'),
+        'telefono_numero' => trim($_POST['telefono_numero'] ?? ''),
+        'email' => trim($_POST['email'] ?? ''),
+        'municipio_origen' => trim($_POST['municipio_origen'] ?? ''),
+        'estado' => 'activo'
+    ];
+
+    $errores = [];
+    if (strlen($valores['primer_nombre']) < 3 || strlen($valores['primer_nombre']) > 20) {
+        $errores[] = 'El primer nombre debe tener entre 3 y 20 caracteres.';
+    }
+    if (strlen($valores['primer_apellido']) < 3 || strlen($valores['primer_apellido']) > 20) {
+        $errores[] = 'El primer apellido debe tener entre 3 y 20 caracteres.';
+    }
+    if (!filter_var($valores['email'], FILTER_VALIDATE_EMAIL)) {
+        $errores[] = 'El correo electrónico no es válido.';
+    }
+    if ($valores['telefono_numero'] === '') {
+        $errores[] = 'El número de celular es obligatorio.';
+    }
+    if ($clienteModelo->existeEmail($valores['email'])) {
+        $errores[] = 'El correo ya está registrado.';
+    }
+    if ($valores['cedula'] !== '' && $clienteModelo->existeCedula($valores['cedula'])) {
+        $errores[] = 'La cédula ya está registrada.';
+    }
+
+    $passwordPlano = trim($_POST['password'] ?? '');
+    if (strlen($passwordPlano) < 6) {
+        $errores[] = 'La contraseña debe tener al menos 6 caracteres.';
+    }
+
+    if (!empty($errores)) {
+        return ['success' => false, 'message' => implode(' ', $errores)];
+    }
+
+    try {
+        $valores['password_hash'] = password_hash($passwordPlano, PASSWORD_DEFAULT);
+        $clienteModelo->crear($valores);
+        return ['success' => true, 'message' => 'Registro exitoso. Ahora puedes iniciar sesión.'];
+    } catch (Throwable $e) {
+        return ['success' => false, 'message' => 'Error al registrar: ' . $e->getMessage()];
     }
 }
 ?>

@@ -15,7 +15,7 @@ function cabecera($titulo = 'Turismo San Luis') {
         . '<title>' . htmlspecialchars($titulo) . '</title>'
         . '<link rel="stylesheet" href="../assets/css/style.css"></head><body>'
         . '<header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav>'
-        . '<a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a>';
+        . '<a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a> | <a href="index.php?ruta=auth/register-cliente">Regístrate</a>';
 
     if (isset($_SESSION['usuario_id'])) {
         $rol = $_SESSION['usuario_rol'] ?? '';
@@ -175,6 +175,15 @@ switch ($ruta) {
             if (is_array($res)) { $ok = !empty($res['success']); $msg = $res['message'] ?? ''; }
         }
         require __DIR__ . '/../vistas/auth/register_afiliado.php';
+        break;
+    case 'auth/register-cliente':
+        $msg = '';
+        $ok = false;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $res = manejar_registro_cliente();
+            if (is_array($res)) { $ok = !empty($res['success']); $msg = $res['message'] ?? ''; }
+        }
+        require __DIR__ . '/../vistas/auth/register_cliente.php';
         break;
     case 'auth/logout':
         session_unset();
