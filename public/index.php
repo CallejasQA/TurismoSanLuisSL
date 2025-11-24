@@ -7,6 +7,7 @@ require_once __DIR__ . '/../controladores/SitioController.php';
 require_once __DIR__ . '/../controladores/AdminController.php';
 require_once __DIR__ . '/../controladores/ClienteController.php';
 require_once __DIR__ . '/../controladores/ReservaController.php';
+require_once __DIR__ . '/../controladores/ValoracionController.php';
 
 $ruta = trim($_GET['ruta'] ?? 'inicio', '/');
 
@@ -22,6 +23,7 @@ function cabecera($titulo = 'Turismo San Luis') {
         if ($rol === 'propietario') {
             echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
             echo ' | <a href="index.php?ruta=propietario/reservas">Reservas</a>';
+            echo ' | <a href="index.php?ruta=propietario/valoraciones">Comentarios</a>';
         }
         if ($rol === 'cliente') {
             echo ' | <a href="index.php?ruta=cliente/reservas">Mis reservas</a>';
@@ -32,6 +34,7 @@ function cabecera($titulo = 'Turismo San Luis') {
             echo ' | <a href="index.php?ruta=admin/servicios">Servicios</a>';
             echo ' | <a href="index.php?ruta=admin/clientes">Clientes</a>';
             echo ' | <a href="index.php?ruta=admin/reservas">Reservas</a>';
+            echo ' | <a href="index.php?ruta=admin/valoraciones">Comentarios</a>';
         }
         echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
     } else {
@@ -69,6 +72,18 @@ switch ($ruta) {
     case 'propietario/reservas/estado':
         $ctrl = new ReservaController();
         $ctrl->propietarioEstado();
+        break;
+    case 'propietario/valoraciones':
+        $ctrl = new ValoracionController();
+        $ctrl->propietarioIndex();
+        break;
+    case 'propietario/valoraciones/actualizar':
+        $ctrl = new ValoracionController();
+        $ctrl->actualizar();
+        break;
+    case 'propietario/valoraciones/eliminar':
+        $ctrl = new ValoracionController();
+        $ctrl->eliminar();
         break;
     case 'alojamiento/ver':
         $ctrl = new SitioController();
@@ -129,6 +144,18 @@ switch ($ruta) {
     case 'admin/reservas/estado':
         $ctrl = new ReservaController();
         $ctrl->adminEstado();
+        break;
+    case 'admin/valoraciones':
+        $ctrl = new ValoracionController();
+        $ctrl->adminIndex();
+        break;
+    case 'admin/valoraciones/actualizar':
+        $ctrl = new ValoracionController();
+        $ctrl->actualizar();
+        break;
+    case 'admin/valoraciones/eliminar':
+        $ctrl = new ValoracionController();
+        $ctrl->eliminar();
         break;
     case 'admin/clientes':
         $ctrl = new ClienteController();

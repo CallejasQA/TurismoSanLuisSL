@@ -38,6 +38,98 @@ class Valoracion {
         ];
     }
 
+    public function listar(array $filtros = [], $propietarioId = null) {
+        $condiciones = ['1=1'];
+        $params = [];
+
+        if ($propietarioId) {
+            $condiciones[] = 'a.propietario_id = ?';
+            $params[] = (int) $propietarioId;
+        }
+
+        if (!empty($filtros['propietario_id'])) {
+            $condiciones[] = 'a.propietario_id = ?';
+            $params[] = (int) $filtros['propietario_id'];
+        }
+        if (!empty($filtros['alojamiento_id'])) {
+            $condiciones[] = 'v.alojamiento_id = ?';
+            $params[] = (int) $filtros['alojamiento_id'];
+        }
+        if (!empty($filtros['fecha_desde'])) {
+            $condiciones[] = 'DATE(v.creado_en) >= ?';
+            $params[] = $filtros['fecha_desde'];
+        }
+        if (!empty($filtros['fecha_hasta'])) {
+            $condiciones[] = 'DATE(v.creado_en) <= ?';
+            $params[] = $filtros['fecha_hasta'];
+        }
+
+        $sql = "SELECT v.*, a.nombre AS alojamiento_nombre, a.propietario_id, up.email AS propietario_email, up.nombre AS propi"
+             . "etario_nombre, cu.email AS cliente_email, COALESCE(cp.primer_nombre, cu.nombre) AS cliente_nombre, cp.primer_ape"
+             . "llido AS cliente_apellido "
+             . "FROM valoraciones v "
+             . "JOIN alojamientos a ON a.id = v.alojamiento_id "
+             . "JOIN usuarios up ON up.id = a.propietario_id "
+             . "JOIN usuarios cu ON cu.id = v.cliente_id "
+             . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
+             . "WHERE " . implode(' AND ', $condiciones)
+             . " ORDER BY v.creado_en DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function propietariosConValoraciones() {
+        $sql = "SELECT DISTINCT a.propietario_id AS id, u.email FROM valoraciones v "
+             . "JOIN alojamientos a ON a.id = v.alojamiento_id "
+             . "JOIN usuarios u ON u.id = a.propietario_id "
+             . "ORDER BY u.email";
+        return $this->db->query($sql)->fetchAll();
+    }
+
+    public function alojamientosConValoraciones($propietarioId = null) {
+        $condicion = '';
+        $params = [];
+        if ($propietarioId) {
+            $condicion = 'WHERE a.propietario_id = ?';
+            $params[] = (int) $propietarioId;
+        }
+        $sql = "SELECT DISTINCT a.id, a.nombre FROM valoraciones v "
+             . "JOIN alojamientos a ON a.id = v.alojamiento_id "
+             . $condicion
+             . " ORDER BY a.nombre";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function actualizarComentario($id, $comentario, $propietarioId = null) {
+        $filtro = '';
+        $params = [$comentario, (int) $id];
+        if ($propietarioId) {
+            $filtro = ' AND a.propietario_id = ?';
+            $params[] = (int) $propietarioId;
+        }
+        $sql = "UPDATE valoraciones v JOIN alojamientos a ON a.id = v.alojamiento_id "
+             . "SET v.comentario = ? WHERE v.id = ?" . $filtro . " LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
+    public function eliminar($id, $propietarioId = null) {
+        $filtro = '';
+        $params = [(int) $id];
+        if ($propietarioId) {
+            $filtro = ' AND a.propietario_id = ?';
+            $params[] = (int) $propietarioId;
+        }
+        $sql = "DELETE v FROM valoraciones v JOIN alojamientos a ON a.id = v.alojamiento_id WHERE v.id = ?" . $filtro . " LIM"
+             . "IT 1";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute($params);
+    }
+
     private function asegurarTablaValoraciones() {
         $stmt = $this->db->query("SHOW TABLES LIKE 'valoraciones'");
         if ($stmt->fetch()) { return; }
