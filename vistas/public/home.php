@@ -41,19 +41,78 @@
 
 <section class="hero">
   <div class="hero__content">
-    <p class="eyebrow">Explora San Luis</p>
-    <h1>Encuentra alojamientos listos para recibirte</h1>
-    <p class="lede">Conecta con hospedajes aprobados por el administrador y administra tus propios sitios desde el panel de propietario.</p>
+    <p class="eyebrow">Escápate a la naturaleza</p>
+    <h1>Encuentra alojamientos rodeados de naturaleza</h1>
+    <p class="lede">Explora hospedajes con encanto natural, tarifas claras y anfitriones verificados. Inspírate con cabañas, estancias rurales y refugios junto al río para tu próxima aventura.</p>
+    <form class="search-card" method="get" action="index.php">
+      <input type="hidden" name="ruta" value="inicio">
+      <div class="field">
+        <label for="buscar-donde">¿Dónde?</label>
+        <input id="buscar-donde" type="text" name="ubicacion" placeholder="Ej: Potrero de los Funes" />
+      </div>
+      <div class="field">
+        <label for="buscar-fechas">Fechas</label>
+        <input id="buscar-fechas" type="text" name="fechas" placeholder="Llegada - Salida" />
+      </div>
+      <div class="field">
+        <label for="buscar-huespedes">Huéspedes</label>
+        <input id="buscar-huespedes" type="number" name="huespedes" min="1" placeholder="2" />
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn" type="submit">Buscar</button>
+      </div>
+    </form>
     <div class="hero__actions">
-      <a class="btn" href="index.php?ruta=auth/register">Quiero afiliar mi hospedaje</a>
+      <a class="btn" href="index.php?ruta=auth/register">Afíliate como anfitrión</a>
       <a class="btn btn-secondary" href="#alojamientos">Ver alojamientos</a>
     </div>
   </div>
 </section>
+
+<?php $recomendados = array_slice($sitios, 0, 4); ?>
+<section class="carousel" aria-label="Recomendados">
+  <div class="section-header">
+    <h2>Recomendados para ti</h2>
+    <p>Selección curada de alojamientos con los mejores paisajes y comodidades.</p>
+  </div>
+  <?php if (empty($recomendados)): ?>
+    <div class="empty-state">
+      <p>Aún no hay alojamientos destacados. ¡Publica el primero y luce aquí!</p>
+    </div>
+  <?php else: ?>
+    <div class="carousel__track">
+      <?php foreach ($recomendados as $s): ?>
+        <article class="carousel__card">
+          <?php if (!empty($s['imagen'])): ?>
+            <img class="carousel__image" src="<?= htmlspecialchars($s['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($s['nombre']) ?>">
+          <?php else: ?>
+            <div class="card__image card__image--placeholder">Naturaleza</div>
+          <?php endif; ?>
+          <div class="carousel__body">
+            <p class="pill"><?= htmlspecialchars(ucfirst($s['estado'])) ?></p>
+            <h3 class="carousel__title"><?= htmlspecialchars($s['nombre']) ?></h3>
+            <p class="muted"><?= htmlspecialchars($s['ubicacion'] ?: 'Ubicación por definir') ?></p>
+            <p class="carousel__price">$<?= number_format($s['precio_noche'], 2) ?><span>/noche</span></p>
+            <div class="carousel__amenities">
+              <?php foreach (array_slice($s['servicios'] ?? [], 0, 3) as $servicio): ?>
+                <span class="service-chip"><?= htmlspecialchars($servicio) ?></span>
+              <?php endforeach; ?>
+            </div>
+          </div>
+          <div class="card__footer">
+            <a class="btn btn-outline" href="index.php?ruta=alojamiento/ver&id=<?= $s['id'] ?>">Ver detalles</a>
+          </div>
+        </article>
+      <?php endforeach; ?>
+    </div>
+  <?php endif; ?>
+</section>
+
 <section id="alojamientos">
   <div class="section-header">
     <h2>Alojamientos disponibles</h2>
-    <p>Listado de hospedajes aprobados o activos en la plataforma.</p>
+    <p>Opciones activas y aprobadas listas para recibirte.</p>
   </div>
   <?php if (empty($sitios)): ?>
     <div class="empty-state">

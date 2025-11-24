@@ -12,33 +12,42 @@ require_once __DIR__ . '/../controladores/ValoracionController.php';
 $ruta = trim($_GET['ruta'] ?? 'inicio', '/');
 
 function cabecera($titulo = 'Turismo San Luis') {
-    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-        . '<title>' . htmlspecialchars($titulo) . '</title>'
-        . '<link rel="stylesheet" href="../assets/css/style.css"></head><body>'
-        . '<header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav>'
-        . '<a href="index.php">Inicio</a> | <a href="index.php?ruta=auth/register">Afíliate</a> | <a href="index.php?ruta=auth/register-cliente">Regístrate</a>';
+    $links = [
+        ['href' => 'index.php', 'label' => 'Inicio'],
+        ['href' => 'index.php?ruta=auth/register', 'label' => 'Afíliate'],
+        ['href' => 'index.php?ruta=auth/register-cliente', 'label' => 'Regístrate'],
+    ];
 
     if (isset($_SESSION['usuario_id'])) {
         $rol = $_SESSION['usuario_rol'] ?? '';
         if ($rol === 'propietario') {
-            echo ' | <a href="index.php?ruta=propietario/sitios">Mi Panel</a>';
-            echo ' | <a href="index.php?ruta=propietario/reservas">Reservas</a>';
-            echo ' | <a href="index.php?ruta=propietario/valoraciones">Comentarios</a>';
+            $links[] = ['href' => 'index.php?ruta=propietario/sitios', 'label' => 'Mi Panel'];
+            $links[] = ['href' => 'index.php?ruta=propietario/reservas', 'label' => 'Reservas'];
+            $links[] = ['href' => 'index.php?ruta=propietario/valoraciones', 'label' => 'Comentarios'];
         }
         if ($rol === 'cliente') {
-            echo ' | <a href="index.php?ruta=cliente/reservas">Mis reservas</a>';
+            $links[] = ['href' => 'index.php?ruta=cliente/reservas', 'label' => 'Mis reservas'];
         }
         if ($rol === 'admin') {
-            echo ' | <a href="index.php?ruta=admin/afiliaciones">Afiliaciones</a>';
-            echo ' | <a href="index.php?ruta=admin/alojamientos">Alojamientos</a>';
-            echo ' | <a href="index.php?ruta=admin/servicios">Servicios</a>';
-            echo ' | <a href="index.php?ruta=admin/clientes">Clientes</a>';
-            echo ' | <a href="index.php?ruta=admin/reservas">Reservas</a>';
-            echo ' | <a href="index.php?ruta=admin/valoraciones">Comentarios</a>';
+            $links[] = ['href' => 'index.php?ruta=admin/afiliaciones', 'label' => 'Afiliaciones'];
+            $links[] = ['href' => 'index.php?ruta=admin/alojamientos', 'label' => 'Alojamientos'];
+            $links[] = ['href' => 'index.php?ruta=admin/servicios', 'label' => 'Servicios'];
+            $links[] = ['href' => 'index.php?ruta=admin/clientes', 'label' => 'Clientes'];
+            $links[] = ['href' => 'index.php?ruta=admin/reservas', 'label' => 'Reservas'];
+            $links[] = ['href' => 'index.php?ruta=admin/valoraciones', 'label' => 'Comentarios'];
         }
-        echo ' | <a href="index.php?ruta=auth/logout">Salir</a>';
+        $links[] = ['href' => 'index.php?ruta=auth/logout', 'label' => 'Salir'];
     } else {
-        echo ' | <a href="index.php?ruta=auth/login">Ingresar</a>';
+        $links[] = ['href' => 'index.php?ruta=auth/login', 'label' => 'Ingresar'];
+    }
+
+    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+        . '<title>' . htmlspecialchars($titulo) . '</title>'
+        . '<link rel="stylesheet" href="../assets/css/style.css"></head><body>'
+        . '<header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav>';
+
+    foreach ($links as $link) {
+        echo '<a href="' . htmlspecialchars($link['href']) . '">' . htmlspecialchars($link['label']) . '</a>';
     }
 
     echo '</nav></div></header><main class="container">';

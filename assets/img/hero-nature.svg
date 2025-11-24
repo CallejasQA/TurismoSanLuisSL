@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2E7D32" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#1B5E20" stop-opacity="0.92" />
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="#2E7D32" />
+  <rect width="1600" height="900" fill="url(#grad)" />
+  <g fill="#81C784" opacity="0.25">
+    <circle cx="200" cy="740" r="220" />
+    <circle cx="620" cy="820" r="260" />
+    <circle cx="1100" cy="760" r="240" />
+    <circle cx="1450" cy="820" r="200" />
+  </g>
+  <g fill="#F1F8E9" opacity="0.12">
+    <path d="M0 680 C 200 600, 400 640, 600 700 C 800 760, 1000 780, 1200 740 C 1400 700, 1600 620, 1600 620 L 1600 900 L 0 900 Z" />
+  </g>
+  <g fill="#E8E8E8" opacity="0.1">
+    <path d="M0 640 C 220 580, 440 600, 640 660 C 840 720, 1100 720, 1320 660 C 1500 610, 1600 600, 1600 600 L 1600 900 L 0 900 Z" />
+  </g>
+  <g stroke="#F1F8E9" stroke-width="6" stroke-linecap="round" opacity="0.4">
+    <path d="M180 520 Q 220 460 260 520 T 340 520" fill="none" />
+    <path d="M1260 360 Q 1320 300 1380 360 T 1500 360" fill="none" />
+  </g>
+</svg>
