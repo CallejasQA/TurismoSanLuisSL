@@ -1,14 +1,20 @@
 <?php
 require_once __DIR__ . '/../modelos/Sitio.php';
 require_once __DIR__ . '/../modelos/Servicio.php';
+require_once __DIR__ . '/../modelos/Reserva.php';
+require_once __DIR__ . '/../modelos/Valoracion.php';
 
 class SitioController {
     private $modelo;
     private $serviciosModelo;
+    private $reservaModelo;
+    private $valoracionModelo;
 
     public function __construct() {
         $this->modelo = new Sitio();
         $this->serviciosModelo = new Servicio();
+        $this->reservaModelo = new Reserva();
+        $this->valoracionModelo = new Valoracion();
     }
 
     public function inicio() {
@@ -21,6 +27,17 @@ class SitioController {
         if (!$id) { header('Location: index.php'); exit; }
         $sitio = $this->modelo->alojamientoPublicado($id);
         if (!$sitio) { header('Location: index.php'); exit; }
+        $promedioValoraciones = $this->valoracionModelo->promedioYConteo($id);
+        $valoracionCliente = null;
+        $reservaFinalizada = null;
+        $puedeValorar = false;
+        if (isset($_SESSION['usuario_id']) && ($_SESSION['usuario_rol'] ?? '') === 'cliente') {
+            $valoracionCliente = $this->valoracionModelo->porClienteYAlojamiento($_SESSION['usuario_id'], $id);
+            $reservaFinalizada = $this->reservaModelo->clienteConReservaFinalizada($id, $_SESSION['usuario_id']);
+            $puedeValorar = $reservaFinalizada && !$valoracionCliente;
+        }
+        $mensajeExito = isset($_GET['exito']) ? '¡Gracias por compartir tu experiencia!' : '';
+        $mensajeError = $_GET['error'] ?? '';
         require __DIR__ . '/../vistas/public/detalle_sitio.php';
     }
 

@@ -2,16 +2,19 @@
 require_once __DIR__ . '/../modelos/Cliente.php';
 require_once __DIR__ . '/../modelos/Reserva.php';
 require_once __DIR__ . '/../modelos/Sitio.php';
+require_once __DIR__ . '/../modelos/Valoracion.php';
 
 class ClienteController {
     private $clientesModelo;
     private $reservaModelo;
     private $sitioModelo;
+    private $valoracionModelo;
 
     public function __construct() {
         $this->clientesModelo = new Cliente();
         $this->reservaModelo = new Reserva();
         $this->sitioModelo = new Sitio();
+        $this->valoracionModelo = new Valoracion();
     }
 
     public function adminIndex() {
@@ -112,6 +115,40 @@ class ClienteController {
         $this->soloCliente();
         $reservas = $this->reservaModelo->porCliente($_SESSION['usuario_id']);
         require __DIR__ . '/../vistas/cliente/reservas.php';
+    }
+
+    public function calificar() {
+        $this->soloCliente();
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') { header('Location: index.php'); exit; }
+
+        $reservaId = isset($_POST['reserva_id']) ? (int) $_POST['reserva_id'] : null;
+        $estrellas = isset($_POST['estrellas']) ? (int) $_POST['estrellas'] : 0;
+        $comentario = trim($_POST['comentario'] ?? '');
+
+        $reserva = $reservaId ? $this->reservaModelo->obtenerPorId($reservaId) : null;
+        if (!$reserva || (int) $reserva['cliente_id'] !== (int) $_SESSION['usuario_id']) {
+            header('Location: index.php?ruta=cliente/reservas'); exit;
+        }
+
+        $alojamientoId = (int) $reserva['alojamiento_id'];
+        $errores = [];
+        if ($reserva['estado'] !== 'finalizada') {
+            $errores[] = 'Solo puedes calificar reservas finalizadas.';
+        }
+        if ($this->valoracionModelo->existeParaReserva($reservaId, $_SESSION['usuario_id'])) {
+            $errores[] = 'Esta reserva ya fue calificada.';
+        }
+        if ($estrellas < 1 || $estrellas > 5) {
+            $errores[] = 'Selecciona una puntuación válida de 1 a 5.';
+        }
+        if (!empty($errores)) {
+            $mensaje = urlencode(implode(' ', $errores));
+            header('Location: index.php?ruta=alojamiento/ver&id=' . $alojamientoId . '&error=' . $mensaje); exit;
+        }
+
+        $comentarioLimpio = substr($comentario, 0, 1000);
+        $this->valoracionModelo->crear($reservaId, $alojamientoId, $_SESSION['usuario_id'], $estrellas, $comentarioLimpio);
+        header('Location: index.php?ruta=alojamiento/ver&id=' . $alojamientoId . '&exito=1'); exit;
     }
 
     private function valoresBase() {

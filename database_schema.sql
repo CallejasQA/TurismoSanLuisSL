@@ -113,8 +113,26 @@ CREATE TABLE reservas (
   fecha_inicio DATE NOT NULL,
   fecha_fin DATE NOT NULL,
   total DECIMAL(12,2) NOT NULL,
-  estado ENUM('pendiente','confirmada','cancelada') DEFAULT 'pendiente',
+  estado ENUM('pendiente','confirmada','cancelada','finalizada') DEFAULT 'pendiente',
   creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,
+  FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- valoraciones de reservas
+DROP TABLE IF EXISTS valoraciones;
+CREATE TABLE valoraciones (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  reserva_id INT NOT NULL,
+  alojamiento_id INT NOT NULL,
+  cliente_id INT NOT NULL,
+  estrellas TINYINT NOT NULL CHECK (estrellas BETWEEN 1 AND 5),
+  comentario TEXT,
+  creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE KEY uniq_reserva (reserva_id),
+  KEY idx_alojamiento (alojamiento_id),
+  KEY idx_cliente (cliente_id),
+  FOREIGN KEY (reserva_id) REFERENCES reservas(id) ON DELETE CASCADE,
   FOREIGN KEY (alojamiento_id) REFERENCES alojamientos(id) ON DELETE CASCADE,
   FOREIGN KEY (cliente_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

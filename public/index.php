@@ -154,6 +154,10 @@ switch ($ruta) {
         $ctrl = new ClienteController();
         $ctrl->misReservas();
         break;
+    case 'cliente/calificar':
+        $ctrl = new ClienteController();
+        $ctrl->calificar();
+        break;
     case 'auth/login':
         $error = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {

@@ -42,15 +42,18 @@
               <td><?= htmlspecialchars($r['fecha_inicio']) ?> → <?= htmlspecialchars($r['fecha_fin']) ?></td>
               <td>$<?= number_format($r['total'], 0, ',', '.') ?></td>
               <td>
-                <?php $class = $r['estado']==='confirmada' ? 'pill--success' : ($r['estado']==='cancelada' ? 'pill--danger' : 'pill--warning'); ?>
-                <span class="pill <?= $class ?>"><?= ucfirst($r['estado']) ?></span>
+                <?php
+                  $estado = $r['estado'] ?? 'pendiente';
+                  $pillClass = ($estado === 'confirmada' || $estado === 'finalizada') ? 'pill--success' : (($estado === 'cancelada') ? 'pill--danger' : 'pill--warning');
+                ?>
+                <span class="pill <?= htmlspecialchars($pillClass) ?>"><?= htmlspecialchars(ucfirst($estado)) ?></span>
               </td>
               <td>
                 <form method="post" action="index.php?ruta=propietario/reservas/estado" class="table__actions">
                   <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
                   <select name="estado">
-                    <?php foreach (['pendiente'=>'Pendiente','confirmada'=>'Confirmada','cancelada'=>'Cancelada'] as $key=>$label): ?>
-                      <option value="<?= $key ?>" <?= $r['estado']===$key ? 'selected' : '' ?>><?= $label ?></option>
+                    <?php foreach (['pendiente'=>'Pendiente','confirmada'=>'Confirmada','finalizada'=>'Finalizada','cancelada'=>'Cancelada'] as $key=>$label): ?>
+                      <option value="<?= $key ?>" <?= ($estado===$key) ? 'selected' : '' ?>><?= $label ?></option>
                     <?php endforeach; ?>
                   </select>
                   <button type="submit" class="btn btn-small">Actualizar</button>

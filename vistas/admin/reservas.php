@@ -57,6 +57,10 @@
                 <form method="post" action="index.php?ruta=admin/reservas/estado" class="table__actions">
                   <input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
                   <select name="estado">
+<<<<<<< ours
+                    <?php foreach (['pendiente'=>'Pendiente','confirmada'=>'Confirmada','finalizada'=>'Finalizada','cancelada'=>'Cancelada'] as $key=>$label): ?>
+                      <option value="<?= $key ?>" <?= ($estado===$key) ? 'selected' : '' ?>><?= $label ?></option>
+=======
                     <?php foreach (['pendiente'=>'Pendiente','confirmada'=>'Confirmada','cancelada'=>'Cancelada'] as $key=>$label): ?>
                       <option value="<?= $key ?>" <?= $r['estado']===$key ? 'selected' : '' ?>><?= $label ?></option>
                     <?php endforeach; ?>

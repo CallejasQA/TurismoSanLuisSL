@@ -16,6 +16,12 @@ class Reserva {
         return $stmt->execute([$alojamientoId, $clienteId, $fechaInicio, $fechaFin, $total, 'pendiente']);
     }
 
+    public function obtenerPorId($id) {
+        $stmt = $this->db->prepare('SELECT * FROM reservas WHERE id = ? LIMIT 1');
+        $stmt->execute([(int) $id]);
+        return $stmt->fetch();
+    }
+
     public function porCliente($clienteId) {
         $sql = "SELECT r.*, a.nombre AS alojamiento, a.ubicacion "
              . "FROM reservas r JOIN alojamientos a ON a.id = r.alojamiento_id "
@@ -77,7 +83,7 @@ class Reserva {
     }
 
     public function cambiarEstado($id, $estado, $propietarioId = null) {
-        $estado = in_array($estado, ['pendiente','confirmada','cancelada']) ? $estado : 'pendiente';
+        $estado = in_array($estado, ['pendiente','confirmada','cancelada','finalizada']) ? $estado : 'pendiente';
         $params = [$estado, $id];
         $filtro = '';
         if ($propietarioId) {
@@ -88,6 +94,14 @@ class Reserva {
              . "SET r.estado = ? WHERE r.id = ?" . $filtro . " LIMIT 1";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
+    }
+
+    public function clienteConReservaFinalizada($alojamientoId, $clienteId) {
+        $sql = "SELECT * FROM reservas WHERE alojamiento_id = ? AND cliente_id = ? AND estado = 'finalizada' "
+             . "ORDER BY fecha_fin DESC, creado_en DESC LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([(int) $alojamientoId, (int) $clienteId]);
+        return $stmt->fetch();
     }
 
     public function propietariosConReservas() {
@@ -120,7 +134,7 @@ class Reserva {
              . "fecha_inicio DATE NOT NULL,"
              . "fecha_fin DATE NOT NULL,"
              . "total DECIMAL(12,2) NOT NULL,"
-             . "estado ENUM('pendiente','confirmada','cancelada') DEFAULT 'pendiente',"
+             . "estado ENUM('pendiente','confirmada','cancelada','finalizada') DEFAULT 'pendiente',"
              . "creado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP,"
              . "KEY idx_alojamiento (alojamiento_id),"
              . "KEY idx_cliente (cliente_id),"

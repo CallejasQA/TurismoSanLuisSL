@@ -29,9 +29,63 @@
       <h3>Descripción</h3>
       <p><?= nl2br(htmlspecialchars($sitio['descripcion'] ?? '')) ?></p>
     </div>
+    <div class="detalle__valoraciones">
+      <h3>Experiencia de huéspedes</h3>
+      <?php if (!empty($mensajeExito)): ?>
+        <p class="pill pill--success"><?= htmlspecialchars($mensajeExito) ?></p>
+      <?php elseif (!empty($mensajeError)): ?>
+        <p class="pill pill--danger"><?= htmlspecialchars($mensajeError) ?></p>
+      <?php endif; ?>
+      <?php if (($promedioValoraciones['total'] ?? 0) > 0): ?>
+        <p><strong><?= htmlspecialchars($promedioValoraciones['promedio']) ?>/5</strong> ⭐ (<?= (int) $promedioValoraciones['total'] ?> reseñas)</p>
+      <?php else: ?>
+        <p class="muted">Aún no hay calificaciones para este alojamiento.</p>
+      <?php endif; ?>
+      <?php if (isset($_SESSION['usuario_id']) && ($_SESSION['usuario_rol'] ?? '') === 'cliente'): ?>
+        <div id="calificacion" class="card" style="margin-top:1rem;">
+          <div class="card__body">
+            <?php if ($valoracionCliente): ?>
+              <p><strong>Tu calificación:</strong> <?= (int)$valoracionCliente['estrellas'] ?> ⭐</p>
+              <?php if (!empty($valoracionCliente['comentario'])): ?>
+                <p class="muted">"<?= nl2br(htmlspecialchars($valoracionCliente['comentario'])) ?>"</p>
+              <?php endif; ?>
+              <p class="muted">Gracias por compartir tu experiencia.</p>
+            <?php elseif ($puedeValorar && $reservaFinalizada): ?>
+              <form method="post" action="index.php?ruta=cliente/calificar" class="form">
+                <input type="hidden" name="reserva_id" value="<?= (int)$reservaFinalizada['id'] ?>">
+                <div class="form-group">
+                  <label for="estrellas">Puntuación</label>
+                  <div class="rating-input">
+                    <?php for ($i = 5; $i >= 1; $i--): ?>
+                      <label style="margin-right:0.5rem;">
+                        <input type="radio" name="estrellas" value="<?= $i ?>" <?= $i===5 ? 'checked' : '' ?>> <?= $i ?> ⭐
+                      </label>
+                    <?php endfor; ?>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="comentario">Comentario</label>
+                  <textarea id="comentario" name="comentario" rows="3" placeholder="Cuéntanos cómo fue tu estadía"></textarea>
+                </div>
+                <button type="submit" class="btn">Enviar calificación</button>
+              </form>
+            <?php else: ?>
+              <p class="muted">Solo podrás calificar cuando tu reserva haya sido marcada como <strong>Finalizada</strong>.</p>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+    </div>
     <div class="detalle__actions">
       <a class="btn" href="index.php">Regresar al inicio</a>
       <a class="btn btn-secondary" href="index.php?ruta=cliente/reservar&id=<?= (int)$sitio['id'] ?>">Solicitar reserva</a>
+      <?php if (isset($_SESSION['usuario_id']) && ($_SESSION['usuario_rol'] ?? '') === 'cliente'): ?>
+        <?php if ($valoracionCliente || $puedeValorar): ?>
+          <a class="btn btn-outline" href="#calificacion">Calificar servicio</a>
+        <?php else: ?>
+          <button class="btn btn-outline" type="button" disabled title="Necesitas una reserva finalizada">Calificar servicio</button>
+        <?php endif; ?>
+      <?php endif; ?>
       <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol']==='propietario'): ?>
         <a class="btn btn-outline" href="index.php?ruta=propietario/sitios">Ir a mis alojamientos</a>
       <?php endif; ?>
