@@ -32,6 +32,12 @@
             <p class="pill"><?= htmlspecialchars(ucfirst($s['estado'])) ?></p>
             <h3><?= htmlspecialchars($s['nombre']) ?></h3>
             <p class="muted"><?= htmlspecialchars($s['ubicacion'] ?: 'Ubicación por definir') ?></p>
+            <?php if (!empty($s['nombre_negocio'])): ?>
+              <div class="business-chip" aria-label="Operado por">
+                <span class="business-chip__label">Operado por</span>
+                <span class="business-chip__name"><?= htmlspecialchars($s['nombre_negocio']) ?></span>
+              </div>
+            <?php endif; ?>
             <p class="price">$<?= number_format($s['precio_noche'], 2) ?><span>/noche</span></p>
             <p class="excerpt"><?= htmlspecialchars(mb_strimwidth($s['descripcion'] ?? '', 0, 140, '…')) ?></p>
             <?php $servicios = $s['servicios'] ?? []; ?>

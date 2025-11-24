@@ -11,6 +11,12 @@
     <p class="pill"><?= htmlspecialchars(ucfirst($sitio['estado'])) ?></p>
     <h1><?= htmlspecialchars($sitio['nombre']) ?></h1>
     <p class="muted">Ubicación: <?= htmlspecialchars($sitio['ubicacion'] ?: 'Por definir') ?></p>
+    <?php if (!empty($sitio['nombre_negocio'])): ?>
+      <div class="operator-card" aria-label="Operado por">
+        <p class="operator-card__label">Operado por</p>
+        <p class="operator-card__name"><?= htmlspecialchars($sitio['nombre_negocio']) ?></p>
+      </div>
+    <?php endif; ?>
     <p class="price price--lg">$<?= number_format($sitio['precio_noche'], 2) ?><span>/noche</span></p>
     <?php if (!empty($sitio['rango_precio'])): ?>
       <p class="muted">Rango: <?= htmlspecialchars($sitio['rango_precio']) ?></p>

@@ -72,8 +72,10 @@ class Sitio {
 
     public function alojamientosPublicos() {
         $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, "
+             . "af.nombre_negocio AS nombre_negocio, "
              . "GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios "
              . "FROM alojamientos a "
+             . "LEFT JOIN afiliados af ON af.usuario_id = a.propietario_id AND af.estado = 'aprobado' "
              . "LEFT JOIN alojamiento_servicio als ON als.alojamiento_id = a.id "
              . "LEFT JOIN servicios s ON s.id = als.servicio_id "
              . "WHERE a.estado IN ('aprobado','activo') "
@@ -85,8 +87,10 @@ class Sitio {
 
     public function alojamientoPublicado($id) {
         $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, "
+             . "af.nombre_negocio AS nombre_negocio, "
              . "GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios "
              . "FROM alojamientos a "
+             . "LEFT JOIN afiliados af ON af.usuario_id = a.propietario_id AND af.estado = 'aprobado' "
              . "LEFT JOIN alojamiento_servicio als ON als.alojamiento_id = a.id "
              . "LEFT JOIN servicios s ON s.id = als.servicio_id "
              . "WHERE a.id = ? AND a.estado IN ('aprobado','activo') "
