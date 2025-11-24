@@ -79,13 +79,6 @@
     <div class="detalle__actions">
       <a class="btn" href="index.php">Regresar al inicio</a>
       <a class="btn btn-secondary" href="index.php?ruta=cliente/reservar&id=<?= (int)$sitio['id'] ?>">Solicitar reserva</a>
-      <?php if (isset($_SESSION['usuario_id']) && ($_SESSION['usuario_rol'] ?? '') === 'cliente'): ?>
-        <?php if ($valoracionCliente || $puedeValorar): ?>
-          <a class="btn btn-outline" href="#calificacion">Calificar servicio</a>
-        <?php else: ?>
-          <button class="btn btn-outline" type="button" disabled title="Necesitas una reserva finalizada">Calificar servicio</button>
-        <?php endif; ?>
-      <?php endif; ?>
       <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol']==='propietario'): ?>
         <a class="btn btn-outline" href="index.php?ruta=propietario/sitios">Ir a mis alojamientos</a>
       <?php endif; ?>
