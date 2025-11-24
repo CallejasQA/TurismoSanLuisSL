@@ -34,8 +34,6 @@
       <a class="btn btn-secondary" href="index.php?ruta=cliente/reservar&id=<?= (int)$sitio['id'] ?>">Solicitar reserva</a>
       <?php if (isset($_SESSION['usuario_rol']) && $_SESSION['usuario_rol']==='propietario'): ?>
         <a class="btn btn-outline" href="index.php?ruta=propietario/sitios">Ir a mis alojamientos</a>
-      <?php else: ?>
-        <a class="btn btn-outline" href="index.php?ruta=auth/register">Deseo afiliarme</a>
       <?php endif; ?>
     </div>
   </div>
