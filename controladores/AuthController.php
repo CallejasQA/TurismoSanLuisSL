@@ -25,7 +25,55 @@ function manejar_registro_afiliado() {
     $tipo = $_POST['tipo'] ?? '';
     $direccion = trim($_POST['direccion'] ?? '');
     $descripcion = trim($_POST['descripcion'] ?? '');
-    if ($email==''||$password==''||$nombre_negocio=='') return ['success'=>false,'message'=>'Faltan campos obligatorios'];
+
+    $errores = [];
+
+    $length = function (string $value) {
+        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+    };
+
+    $nombreLen = $length($nombre_negocio);
+    $direccionLen = $length($direccion);
+    $descripcionLen = $length($descripcion);
+    $passwordLen = $length($password);
+    $emailLen = $length($email);
+
+    if ($nombreLen < 3 || $nombreLen > 30) {
+        $errores[] = 'El nombre del negocio debe tener entre 3 y 30 caracteres.';
+    }
+
+    if ($direccionLen < 3 || $direccionLen > 80) {
+        $errores[] = 'La dirección debe tener entre 3 y 80 caracteres.';
+    }
+
+    if ($descripcionLen < 3 || $descripcionLen > 300) {
+        $errores[] = 'La descripción debe tener entre 3 y 300 caracteres.';
+    }
+
+    if ($email === '') {
+        $errores[] = 'El email es obligatorio.';
+    } elseif (preg_match('/\s/', $email)) {
+        $errores[] = 'El formato del correo no es válido.';
+    } elseif ($emailLen < 6 || $emailLen > 70) {
+        $errores[] = 'El correo debe tener entre 6 y 70 caracteres.';
+    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errores[] = 'El formato del correo no es válido.';
+    }
+
+    if ($password === '') {
+        $errores[] = 'La contraseña es obligatoria.';
+    } elseif ($passwordLen < 6 || $passwordLen > 20) {
+        $errores[] = 'La contraseña debe tener entre 6 y 20 caracteres.';
+    }
+
+    if ($tipo === '') {
+        $errores[] = 'Debe seleccionar un tipo de alojamiento.';
+    }
+
+    if (!empty($errores)) {
+        return ['success' => false, 'message' => implode(' ', $errores)];
+    }
+
     $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email=? LIMIT 1'); $stmt->execute([$email]);
     if ($stmt->fetch()) return ['success'=>false,'message'=>'El correo ya está registrado'];
     try {
