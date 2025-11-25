@@ -118,14 +118,14 @@ class Valoracion {
     }
 
     public function eliminar($id, $propietarioId = null) {
-        $filtro = '';
         $params = [(int) $id];
+        $sql = 'DELETE FROM valoraciones WHERE id = ?';
+
         if ($propietarioId) {
-            $filtro = ' AND a.propietario_id = ?';
+            $sql .= ' AND EXISTS (SELECT 1 FROM alojamientos a WHERE a.id = valoraciones.alojamiento_id AND a.propietario_id = ?)';
             $params[] = (int) $propietarioId;
         }
-        $sql = "DELETE v FROM valoraciones v JOIN alojamientos a ON a.id = v.alojamiento_id WHERE v.id = ?" . $filtro . " LIM"
-             . "IT 1";
+
         $stmt = $this->db->prepare($sql);
         return $stmt->execute($params);
     }
