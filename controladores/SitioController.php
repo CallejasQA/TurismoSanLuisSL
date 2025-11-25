@@ -54,15 +54,7 @@ class SitioController {
         if (!$propietario || ($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
-            $imagen = null;
-            if (!empty($_FILES['imagen']['name'])) {
-                $dir = __DIR__ . '/../public/storage/subidas/';
-                if (!is_dir($dir)) { mkdir($dir,0755,true); }
-                $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
-                if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
-                    $imagen = 'storage/subidas/'.$nombreArchivo;
-                }
-            }
+            $imagen = $this->procesarSubidaImagen($_FILES['imagen'] ?? null);
             $servicios = array_map('intval', $_POST['servicios'] ?? []);
             $data = [
                 'propietario_id'=>$propietario,
@@ -92,15 +84,7 @@ class SitioController {
         if (!$sitio || $sitio['propietario_id'] != $propietario) die('No autorizado');
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token']==='') die('Token CSRF faltante');
-            $imagen = $sitio['imagen'] ?? null;
-            if (!empty($_FILES['imagen']['name'])) {
-                $dir = __DIR__ . '/../public/storage/subidas/';
-                if (!is_dir($dir)) { mkdir($dir,0755,true); }
-                $nombreArchivo = time().'_'.basename($_FILES['imagen']['name']);
-                if (move_uploaded_file($_FILES['imagen']['tmp_name'],$dir.$nombreArchivo)) {
-                    $imagen = 'storage/subidas/'.$nombreArchivo;
-                }
-            }
+            $imagen = $this->procesarSubidaImagen($_FILES['imagen'] ?? null, $sitio['imagen'] ?? null);
             $servicios = array_map('intval', $_POST['servicios'] ?? []);
             $data = [
                 'nombre'=>$_POST['nombre']??'',
@@ -128,6 +112,56 @@ class SitioController {
             if ($sitio && $sitio['propietario_id']==$propietario) $this->modelo->eliminarAlojamiento($id);
         }
         header('Location: index.php?ruta=propietario/sitios'); exit;
+    }
+
+    private function procesarSubidaImagen(?array $file, ?string $imagenActual = null): ?string {
+        if (!$file || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE || ($file['name'] ?? '') === '') {
+            return $imagenActual;
+        }
+
+        if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'])) {
+            return $imagenActual;
+        }
+
+        $allowed = [
+            'image/jpeg' => 'jpg',
+            'image/png'  => 'png',
+            'image/webp' => 'webp'
+        ];
+
+        $mimeType = mime_content_type($file['tmp_name']);
+        if (!isset($allowed[$mimeType])) {
+            return $imagenActual;
+        }
+
+        $maxSize = 4 * 1024 * 1024; // 4 MB
+        if (($file['size'] ?? 0) > $maxSize) {
+            return $imagenActual;
+        }
+
+        $dir = __DIR__ . '/../public/storage/subidas/';
+        if (!is_dir($dir)) { mkdir($dir, 0755, true); }
+
+        $baseName = pathinfo($file['name'], PATHINFO_FILENAME);
+        $slug = preg_replace('/[^a-zA-Z0-9_-]+/', '-', $baseName);
+        $slug = trim($slug, '-');
+        if ($slug === '') { $slug = 'imagen'; }
+
+        $nombreArchivo = time() . '_' . $slug . '.' . $allowed[$mimeType];
+        $destino = $dir . $nombreArchivo;
+
+        if (!move_uploaded_file($file['tmp_name'], $destino)) {
+            return $imagenActual;
+        }
+
+        if ($imagenActual) {
+            $rutaAnterior = __DIR__ . '/../public/' . ltrim($imagenActual, '/');
+            if (is_file($rutaAnterior)) {
+                @unlink($rutaAnterior);
+            }
+        }
+
+        return '/storage/subidas/' . $nombreArchivo;
     }
 }
 ?>

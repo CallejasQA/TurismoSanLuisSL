@@ -2,12 +2,7 @@
 $backgroundImage = getBackgroundImageUrl();
 cabecera('Ingresar', ['css/auth.css'], 'auth-page');
 ?>
-<style>
-body.auth-page {
-    background-image: url("<?= htmlspecialchars($backgroundImage) ?>");
-}
-</style>
-<div class="auth-shell">
+<div class="auth-shell" style="--auth-bg: url('<?= htmlspecialchars($backgroundImage) ?>');">
     <div class="auth-card">
         <h1>Iniciar sesión</h1>
         <p class="subtitle">Accede para gestionar tus reservas o alojamientos.</p>

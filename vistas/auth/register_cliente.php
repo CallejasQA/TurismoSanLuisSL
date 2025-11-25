@@ -2,12 +2,7 @@
 $backgroundImage = getBackgroundImageUrl();
 cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
 ?>
-<style>
-body.auth-page {
-    background-image: url("<?= htmlspecialchars($backgroundImage) ?>");
-}
-</style>
-<div class="auth-shell">
+<div class="auth-shell" style="--auth-bg: url('<?= htmlspecialchars($backgroundImage) ?>');">
     <div class="auth-card">
         <h1>Regístrate</h1>
         <p class="subtitle">Crea tu cuenta para descubrir y reservar experiencias únicas.</p>
