@@ -25,21 +25,15 @@ class ClienteController {
 
     public function adminCrear() {
         $this->soloAdmin();
-        $errores = [];
         $valores = $this->valoresBase();
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            [$valores, $errores, $passwordHash] = $this->procesarFormulario($valores);
-            if (empty($errores)) {
-                try {
-                    $valores['password_hash'] = $passwordHash;
-                    $this->clientesModelo->crear($valores);
-                    header('Location: index.php?ruta=admin/clientes'); exit;
-                } catch (Throwable $e) {
-                    $errores[] = 'Error al guardar: ' . $e->getMessage();
-                }
+        [$valores, $errores, $guardado] = $this->manejarEnvioCliente(
+            $valores,
+            function (array $datos) {
+                $this->clientesModelo->crear($datos);
             }
-        }
+        );
+
+        if ($guardado) { header('Location: index.php?ruta=admin/clientes'); exit; }
 
         $esEdicion = false;
         require __DIR__ . '/../vistas/admin/form_cliente.php';
@@ -52,21 +46,17 @@ class ClienteController {
         $cliente = $this->clientesModelo->encontrar($id);
         if (!$cliente) { header('Location: index.php?ruta=admin/clientes'); exit; }
 
-        $errores = [];
         $valores = array_merge($this->valoresBase(), $cliente);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            [$valores, $errores, $passwordHash] = $this->procesarFormulario($valores, $id);
-            if (empty($errores)) {
-                try {
-                    $valores['password_hash'] = $passwordHash;
-                    $this->clientesModelo->actualizar($id, $valores);
-                    header('Location: index.php?ruta=admin/clientes'); exit;
-                } catch (Throwable $e) {
-                    $errores[] = 'Error al actualizar: ' . $e->getMessage();
-                }
-            }
-        }
+        [$valores, $errores, $guardado] = $this->manejarEnvioCliente(
+            $valores,
+            function (array $datos) use ($id) {
+                $this->clientesModelo->actualizar($id, $datos);
+            },
+            $id
+        );
+
+        if ($guardado) { header('Location: index.php?ruta=admin/clientes'); exit; }
 
         $esEdicion = true;
         require __DIR__ . '/../vistas/admin/form_cliente.php';
@@ -168,6 +158,27 @@ class ClienteController {
             'municipio_origen' => '',
             'estado' => 'activo'
         ];
+    }
+
+    private function manejarEnvioCliente(array $valores, callable $persistencia, $id = null) {
+        $errores = [];
+        $guardado = false;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            [$valores, $errores, $passwordHash] = $this->procesarFormulario($valores, $id);
+            if (empty($errores)) {
+                try {
+                    $valores['password_hash'] = $passwordHash;
+                    $persistencia($valores);
+                    $guardado = true;
+                } catch (Throwable $e) {
+                    $prefijo = $id ? 'Error al actualizar: ' : 'Error al guardar: ';
+                    $errores[] = $prefijo . $e->getMessage();
+                }
+            }
+        }
+
+        return [$valores, $errores, $guardado];
     }
 
     private function procesarFormulario(array $valores, $id = null) {
