@@ -20,6 +20,15 @@ function setSetting($key, $value) {
     return Setting::set($key, $value);
 }
 
+function publicUrl(string $path): string {
+    $normalized = '/' . ltrim($path, '/');
+    $base = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
+    if ($base === '' || $base === '/') {
+        return $normalized;
+    }
+    return $base . $normalized;
+}
+
 function getBackgroundImageUrl() {
     $default = '/assets/img/default-bg.jpg';
     $stored = getSetting('background_image', null);
@@ -28,24 +37,12 @@ function getBackgroundImageUrl() {
     $candidatePath = __DIR__ . $default;
 
     if (is_string($stored) && $stored !== '') {
-        $storedPath = __DIR__ . $stored;
-        if (file_exists($storedPath)) {
-            $candidateUrl = $stored;
-            $candidatePath = $storedPath;
+        $path = __DIR__ . $stored;
+        if (file_exists($path)) {
+            return publicUrl($stored);
         }
     }
-
-    if (!file_exists($candidatePath)) {
-        return $default;
-    }
-
-    $version = @filemtime($candidatePath);
-    if ($version) {
-        $glue = str_contains($candidateUrl, '?') ? '&' : '?';
-        return $candidateUrl . $glue . 'v=' . $version;
-    }
-
-    return $candidateUrl;
+    return publicUrl($default);
 }
 
 function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bodyClass = '') {
@@ -80,28 +77,36 @@ function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bo
     }
 
     $stylesheets = array_merge(['../assets/css/style.css'], $extraCss);
-    $cssLinks = '';
-    foreach ($stylesheets as $css) {
-        $cssLinks .= '<link rel="stylesheet" href="' . htmlspecialchars($css) . '">';
-    }
+    $cssLinks = array_map(
+        fn($css) => '<link rel="stylesheet" href="' . htmlspecialchars($css) . '">',
+        $stylesheets
+    );
 
     $bodyAttr = $bodyClass !== '' ? ' class="' . htmlspecialchars($bodyClass) . '"' : '';
 
-    echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+    $linksHtml = array_map(
+        fn($link) => '<a href="' . htmlspecialchars($link['href']) . '">' . htmlspecialchars($link['label']) . '</a>',
+        $links
+    );
+
+    echo '<!doctype html>'
+        . '<html lang="es">'
+        . '<head>'
+        . '<meta charset="utf-8">'
+        . '<meta name="viewport" content="width=device-width,initial-scale=1">'
         . '<title>' . htmlspecialchars($titulo) . '</title>'
-        . $cssLinks . '</head><body' . $bodyAttr . '>'
+        . implode('', $cssLinks)
+        . '</head>'
+        . '<body' . $bodyAttr . '>'
         . '<header class="site-header"><div class="container">'
         . '<a class="brand" href="index.php">Turismo San Luis</a>'
         . '<button class="nav-toggle" aria-expanded="false" aria-label="Abrir menú" aria-controls="primary-menu">'
         . '<span></span><span></span><span></span>'
         . '</button>'
-        . '<nav id="primary-menu" class="nav-menu">';
-
-    foreach ($links as $link) {
-        echo '<a href="' . htmlspecialchars($link['href']) . '">' . htmlspecialchars($link['label']) . '</a>';
-    }
-
-    echo '</nav></div></header>'
+        . '<nav id="primary-menu" class="nav-menu">'
+        . implode('', $linksHtml)
+        . '</nav>'
+        . '</div></header>'
         . '<script>(function(){const t=document.querySelector(".nav-toggle"),n=document.getElementById("primary-menu");if(!t||!n)return;t.addEventListener("click",function(){var e=n.classList.toggle("is-open");t.setAttribute("aria-expanded",e?"true":"false")});})();</script>'
         . '<main class="container">';
 }
