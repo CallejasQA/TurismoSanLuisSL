@@ -33,7 +33,7 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
             </label>
             <label class="auth-label">Cédula
                 <div class="auth-input-wrapper">
-                    <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>" required maxlength="30" aria-describedby="cedula-feedback" data-feedback="cedula-feedback">
+                    <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="\\d*" aria-describedby="cedula-feedback" data-feedback="cedula-feedback">
                     <span class="validation-icon" aria-hidden="true"></span>
                 </div>
                 <div class="field-feedback is-hidden" id="cedula-feedback" role="status" aria-live="polite"></div>
@@ -46,7 +46,7 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                         <span class="validation-icon" aria-hidden="true"></span>
                     </div>
                     <div class="auth-input-wrapper">
-                        <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required maxlength="15" aria-describedby="telefono-numero-feedback" data-feedback="telefono-numero-feedback">
+                        <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="\\d*" aria-describedby="telefono-numero-feedback" data-feedback="telefono-numero-feedback">
                         <span class="validation-icon" aria-hidden="true"></span>
                     </div>
                 </div>
@@ -178,8 +178,8 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                         return { valid: false, message: 'La cédula es obligatoria.' };
                     }
 
-                    if (value.length < 6 || value.length > 30) {
-                        return { valid: false, message: 'Debe tener entre 6 y 30 dígitos.' };
+                    if (value.length < 6 || value.length > 20) {
+                        return { valid: false, message: 'Debe tener entre 6 y 20 dígitos.' };
                     }
 
                     if (!/^\d+$/.test(value)) {
@@ -210,8 +210,8 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                         return { valid: false, message: 'El número es obligatorio.' };
                     }
 
-                    if (value.length < 7 || value.length > 15) {
-                        return { valid: false, message: 'Debe tener entre 7 y 15 dígitos.' };
+                    if (value.length < 7 || value.length > 20) {
+                        return { valid: false, message: 'Debe tener entre 7 y 20 dígitos.' };
                     }
 
                     if (!/^\d+$/.test(value)) {

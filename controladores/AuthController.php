@@ -131,8 +131,10 @@ function manejar_registro_cliente() {
     }
     if ($valores['telefono_numero'] === '') {
         $errores[] = 'El número de celular es obligatorio.';
-    } elseif ($telefonoLen > 15) {
-        $errores[] = 'El número de celular no puede exceder 15 caracteres.';
+    } elseif (!ctype_digit($valores['telefono_numero'])) {
+        $errores[] = 'El número de celular solo puede contener números.';
+    } elseif ($telefonoLen < 7 || $telefonoLen > 20) {
+        $errores[] = 'El número de celular debe tener entre 7 y 20 caracteres.';
     }
     if ($municipioOrigenLen > 100) {
         $errores[] = 'El municipio de origen no puede exceder 100 caracteres.';
@@ -140,9 +142,14 @@ function manejar_registro_cliente() {
     if ($clienteModelo->existeEmail($valores['email'])) {
         $errores[] = 'El correo ya está registrado.';
     }
-    if ($valores['cedula'] !== '') {
-        if ($cedulaLen > 30) {
-            $errores[] = 'La cédula no puede exceder 30 caracteres.';
+    if ($valores['cedula'] === '') {
+        $errores[] = 'La cédula es obligatoria.';
+    } else {
+        if (!ctype_digit($valores['cedula'])) {
+            $errores[] = 'La cédula solo puede contener números.';
+        }
+        if ($cedulaLen < 6 || $cedulaLen > 20) {
+            $errores[] = 'La cédula debe tener entre 6 y 20 caracteres.';
         }
         if ($clienteModelo->existeCedula($valores['cedula'])) {
             $errores[] = 'La cédula ya está registrada.';

@@ -205,12 +205,24 @@ class ClienteController {
         }
         if ($valores['telefono_numero'] === '') {
             $errores[] = 'El número de celular es obligatorio.';
+        } elseif (!ctype_digit($valores['telefono_numero'])) {
+            $errores[] = 'El número de celular solo puede contener números.';
+        } elseif (strlen($valores['telefono_numero']) < 7 || strlen($valores['telefono_numero']) > 20) {
+            $errores[] = 'El número de celular debe tener entre 7 y 20 caracteres.';
         }
         if ($this->clientesModelo->existeEmail($valores['email'], $id)) {
             $errores[] = 'El correo ya está registrado.';
         }
-        if ($this->clientesModelo->existeCedula($valores['cedula'], $id)) {
-            $errores[] = 'La cédula ya está registrada.';
+        if ($valores['cedula'] !== '') {
+            if (!ctype_digit($valores['cedula'])) {
+                $errores[] = 'La cédula solo puede contener números.';
+            }
+            if (strlen($valores['cedula']) > 20) {
+                $errores[] = 'La cédula no puede exceder 20 caracteres.';
+            }
+            if ($this->clientesModelo->existeCedula($valores['cedula'], $id)) {
+                $errores[] = 'La cédula ya está registrada.';
+            }
         }
 
         $passwordPlano = trim($_POST['password'] ?? '');

@@ -33,7 +33,7 @@
       </div>
       <div class="form-group">
         <label>Cédula</label>
-        <input type="text" name="cedula" value="<?= htmlspecialchars($valores['cedula']) ?>">
+        <input type="text" name="cedula" value="<?= htmlspecialchars($valores['cedula']) ?>" maxlength="20" inputmode="numeric" pattern="\d*">
       </div>
       <div class="form-group">
         <label>Celular *</label>
@@ -44,7 +44,7 @@
             <option value="+1" <?= $valores['telefono_codigo']==='+1'?'selected':'' ?>>🇺🇸 +1</option>
             <option value="+34" <?= $valores['telefono_codigo']==='+34'?'selected':'' ?>>🇪🇸 +34</option>
           </select>
-          <input type="tel" name="telefono_numero" value="<?= htmlspecialchars($valores['telefono_numero']) ?>" placeholder="3001234567" required>
+          <input type="tel" name="telefono_numero" value="<?= htmlspecialchars($valores['telefono_numero']) ?>" placeholder="3001234567" required maxlength="20" inputmode="numeric" pattern="\d*">
         </div>
       </div>
       <div class="form-group">
