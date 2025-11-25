@@ -44,13 +44,20 @@ function cabecera($titulo = 'Turismo San Luis') {
     echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         . '<title>' . htmlspecialchars($titulo) . '</title>'
         . '<link rel="stylesheet" href="../assets/css/style.css"></head><body>'
-        . '<header class="site-header"><div class="container"><a class="brand" href="index.php">Turismo San Luis</a><nav>';
+        . '<header class="site-header"><div class="container">'
+        . '<a class="brand" href="index.php">Turismo San Luis</a>'
+        . '<button class="nav-toggle" aria-expanded="false" aria-label="Abrir menú" aria-controls="primary-menu">'
+        . '<span></span><span></span><span></span>'
+        . '</button>'
+        . '<nav id="primary-menu" class="nav-menu">';
 
     foreach ($links as $link) {
         echo '<a href="' . htmlspecialchars($link['href']) . '">' . htmlspecialchars($link['label']) . '</a>';
     }
 
-    echo '</nav></div></header><main class="container">';
+    echo '</nav></div></header>'
+        . '<script>(function(){const t=document.querySelector(".nav-toggle"),n=document.getElementById("primary-menu");if(!t||!n)return;t.addEventListener("click",function(){var e=n.classList.toggle("is-open");t.setAttribute("aria-expanded",e?"true":"false")});})();</script>'
+        . '<main class="container">';
 }
 
 function pie() {
