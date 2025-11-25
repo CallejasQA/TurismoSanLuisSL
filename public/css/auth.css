@@ -89,6 +89,12 @@ body.auth-page {
     gap: 16px;
 }
 
+.auth-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
 .auth-label {
     display: flex;
     flex-direction: column;
@@ -124,6 +130,55 @@ body.auth-page {
 .auth-textarea:hover,
 .auth-select:hover {
     border-color: #cbd5e1;
+}
+
+.auth-input.is-valid {
+    border-color: #16a34a;
+    background: #f0fdf4;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+
+.auth-input.is-invalid {
+    border-color: #ef4444;
+    background: #fef2f2;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.16);
+}
+
+.validation-icon {
+    position: absolute;
+    right: 12px;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.validation-icon.valid { color: #16a34a; }
+.validation-icon.invalid { color: #ef4444; }
+
+.auth-input.is-valid + .validation-icon,
+.auth-input.is-invalid + .validation-icon {
+    opacity: 1;
+}
+
+.field-feedback {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    min-height: 18px;
+}
+
+.field-feedback.valid {
+    color: #166534;
+}
+
+.field-feedback.invalid {
+    color: #b91c1c;
+}
+
+.field-feedback.is-hidden {
+    display: none;
 }
 
 .auth-textarea {
