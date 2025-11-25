@@ -11,22 +11,22 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
         <?php endif; ?>
         <form class="auth-form" method="post" action="index.php?ruta=auth/register-cliente">
             <label class="auth-label">Primer nombre
-                <input type="text" name="primer_nombre" class="auth-input" value="<?php echo htmlspecialchars($_POST['primer_nombre'] ?? ''); ?>" required>
+                <input type="text" name="primer_nombre" class="auth-input" value="<?php echo htmlspecialchars($_POST['primer_nombre'] ?? ''); ?>" required maxlength="30">
             </label>
             <label class="auth-label">Segundo nombre
-                <input type="text" name="segundo_nombre" class="auth-input" value="<?php echo htmlspecialchars($_POST['segundo_nombre'] ?? ''); ?>">
+                <input type="text" name="segundo_nombre" class="auth-input" value="<?php echo htmlspecialchars($_POST['segundo_nombre'] ?? ''); ?>" maxlength="30">
             </label>
             <label class="auth-label">Primer apellido
-                <input type="text" name="primer_apellido" class="auth-input" value="<?php echo htmlspecialchars($_POST['primer_apellido'] ?? ''); ?>" required>
+                <input type="text" name="primer_apellido" class="auth-input" value="<?php echo htmlspecialchars($_POST['primer_apellido'] ?? ''); ?>" required maxlength="30">
             </label>
             <label class="auth-label">Cédula
-                <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>">
+                <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>" maxlength="30">
             </label>
             <div class="header-offset">
                 <label class="auth-label">Celular</label>
                 <div style="display:flex; gap:8px;">
                     <input type="text" name="telefono_codigo" class="auth-input" style="max-width:90px;" value="<?php echo htmlspecialchars($_POST['telefono_codigo'] ?? '+57'); ?>" required>
-                    <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required>
+                    <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required maxlength="15">
                 </div>
             </div>
             <label class="auth-label">Correo electrónico

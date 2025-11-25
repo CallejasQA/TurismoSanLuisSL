@@ -58,23 +58,43 @@ function manejar_registro_cliente() {
     ];
 
     $errores = [];
-    if (strlen($valores['primer_nombre']) < 3 || strlen($valores['primer_nombre']) > 20) {
-        $errores[] = 'El primer nombre debe tener entre 3 y 20 caracteres.';
+    $length = function (string $value) {
+        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+    };
+
+    $primerNombreLen = $length($valores['primer_nombre']);
+    $segundoNombreLen = $length($valores['segundo_nombre']);
+    $primerApellidoLen = $length($valores['primer_apellido']);
+    $cedulaLen = $length($valores['cedula']);
+    $telefonoLen = $length($valores['telefono_numero']);
+
+    if ($primerNombreLen < 3 || $primerNombreLen > 30) {
+        $errores[] = 'El primer nombre debe tener entre 3 y 30 caracteres.';
     }
-    if (strlen($valores['primer_apellido']) < 3 || strlen($valores['primer_apellido']) > 20) {
-        $errores[] = 'El primer apellido debe tener entre 3 y 20 caracteres.';
+    if ($segundoNombreLen > 30) {
+        $errores[] = 'El segundo nombre no puede exceder 30 caracteres.';
+    }
+    if ($primerApellidoLen < 3 || $primerApellidoLen > 30) {
+        $errores[] = 'El primer apellido debe tener entre 3 y 30 caracteres.';
     }
     if (!filter_var($valores['email'], FILTER_VALIDATE_EMAIL)) {
         $errores[] = 'El correo electrónico no es válido.';
     }
     if ($valores['telefono_numero'] === '') {
         $errores[] = 'El número de celular es obligatorio.';
+    } elseif ($telefonoLen > 15) {
+        $errores[] = 'El número de celular no puede exceder 15 caracteres.';
     }
     if ($clienteModelo->existeEmail($valores['email'])) {
         $errores[] = 'El correo ya está registrado.';
     }
-    if ($valores['cedula'] !== '' && $clienteModelo->existeCedula($valores['cedula'])) {
-        $errores[] = 'La cédula ya está registrada.';
+    if ($valores['cedula'] !== '') {
+        if ($cedulaLen > 30) {
+            $errores[] = 'La cédula no puede exceder 30 caracteres.';
+        }
+        if ($clienteModelo->existeCedula($valores['cedula'])) {
+            $errores[] = 'La cédula ya está registrada.';
+        }
     }
 
     $passwordPlano = trim($_POST['password'] ?? '');
