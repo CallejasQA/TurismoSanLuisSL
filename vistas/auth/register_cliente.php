@@ -30,13 +30,21 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                 </div>
             </div>
             <label class="auth-label">Correo electrónico
-                <input type="email" name="email" class="auth-input" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required>
+                <div class="auth-input-wrapper">
+                    <input type="email" name="email" class="auth-input" value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>" required aria-describedby="email-feedback">
+                    <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <div class="field-feedback is-hidden" id="email-feedback" role="status" aria-live="polite"></div>
             </label>
             <label class="auth-label">Municipio de origen
                 <input type="text" name="municipio_origen" class="auth-input" value="<?php echo htmlspecialchars($_POST['municipio_origen'] ?? ''); ?>">
             </label>
             <label class="auth-label">Contraseña
-                <input type="password" name="password" class="auth-input" required>
+                <div class="auth-input-wrapper">
+                    <input type="password" name="password" class="auth-input" required aria-describedby="password-feedback">
+                    <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <div class="field-feedback is-hidden" id="password-feedback" role="status" aria-live="polite"></div>
             </label>
             <button type="submit" class="auth-button">Registrarse</button>
         </form>
@@ -45,4 +53,161 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('.auth-form');
+        const nameInputs = ['primer_nombre', 'segundo_nombre', 'primer_apellido']
+            .map((name) => form.querySelector(`input[name="${name}"]`));
+        const cedulaInput = form.querySelector('input[name="cedula"]');
+        const codigoInput = form.querySelector('input[name="telefono_codigo"]');
+        const telefonoInput = form.querySelector('input[name="telefono_numero"]');
+        const emailInput = form.querySelector('input[name="email"]');
+        const passwordInput = form.querySelector('input[name="password"]');
+
+        const sanitizeName = (input) => {
+            const clean = input.value.replace(/[0-9]/g, '');
+            if (clean !== input.value) {
+                input.value = clean;
+            }
+        };
+
+        const sanitizeDigits = (input) => {
+            const clean = input.value.replace(/[^0-9]/g, '');
+            if (clean !== input.value) {
+                input.value = clean;
+            }
+        };
+
+        const sanitizePhoneCode = (input) => {
+            let value = input.value;
+            const hasPlus = value.startsWith('+');
+            value = value.replace(/[^0-9]/g, '');
+            input.value = `${hasPlus ? '+' : ''}${value}`;
+        };
+
+        const sanitizeEmail = () => {
+            const clean = emailInput.value.replace(/\s+/g, '');
+            if (clean !== emailInput.value) {
+                emailInput.value = clean;
+            }
+        };
+
+        const controlKeys = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete', 'Home', 'End'];
+
+        nameInputs.forEach((input) => {
+            input.addEventListener('keydown', (event) => {
+                if (controlKeys.includes(event.key)) return;
+                if (/\d/.test(event.key)) {
+                    event.preventDefault();
+                }
+            });
+            input.addEventListener('input', () => sanitizeName(input));
+        });
+
+        cedulaInput.addEventListener('keydown', (event) => {
+            if (controlKeys.includes(event.key)) return;
+            if (/[^0-9]/.test(event.key)) {
+                event.preventDefault();
+            }
+        });
+        cedulaInput.addEventListener('input', () => sanitizeDigits(cedulaInput));
+
+        codigoInput.addEventListener('keydown', (event) => {
+            if (controlKeys.includes(event.key)) return;
+            if (event.key === '+' && !codigoInput.value.includes('+')) {
+                return;
+            }
+            if (/[^0-9]/.test(event.key)) {
+                event.preventDefault();
+            }
+        });
+        codigoInput.addEventListener('input', () => sanitizePhoneCode(codigoInput));
+
+        telefonoInput.addEventListener('keydown', (event) => {
+            if (controlKeys.includes(event.key)) return;
+            if (/[^0-9]/.test(event.key)) {
+                event.preventDefault();
+            }
+        });
+        telefonoInput.addEventListener('input', () => sanitizeDigits(telefonoInput));
+
+        const validators = {
+            email: (value) => {
+                if (!value) {
+                    return { valid: false, message: 'El email es obligatorio.' };
+                }
+
+                if (/\s/.test(value)) {
+                    return { valid: false, message: 'El formato del correo no es válido.' };
+                }
+
+                if (value.length < 6 || value.length > 70) {
+                    return { valid: false, message: 'El correo debe tener entre 6 y 70 caracteres.' };
+                }
+
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(value)) {
+                    return { valid: false, message: 'El formato del correo no es válido.' };
+                }
+
+                return { valid: true, message: 'Correo válido.' };
+            },
+            password: (value) => {
+                if (!value) {
+                    return { valid: false, message: 'La contraseña es obligatoria.' };
+                }
+
+                if (value.length < 6 || value.length > 20) {
+                    return { valid: false, message: 'Debe tener entre 6 y 20 caracteres.' };
+                }
+
+                return { valid: true, message: 'Contraseña válida.' };
+            }
+        };
+
+        const setupValidation = (input, validator) => {
+            const feedback = input.closest('.auth-label').querySelector('.field-feedback');
+            const icon = input.closest('.auth-input-wrapper').querySelector('.validation-icon');
+            let touched = false;
+
+            const renderFeedback = () => {
+                if (!touched) {
+                    feedback.textContent = '';
+                    feedback.classList.add('is-hidden');
+                    icon.textContent = '';
+                    input.classList.remove('is-valid', 'is-invalid');
+                    return;
+                }
+
+                const { valid, message } = validator(input.value.trim());
+                feedback.textContent = message;
+                feedback.classList.remove('is-hidden');
+                feedback.classList.toggle('valid', valid);
+                feedback.classList.toggle('invalid', !valid);
+                input.classList.toggle('is-valid', valid);
+                input.classList.toggle('is-invalid', !valid);
+                icon.textContent = valid ? '✔' : '✖';
+                icon.classList.toggle('valid', valid);
+                icon.classList.toggle('invalid', !valid);
+            };
+
+            input.addEventListener('input', () => {
+                if (input === emailInput) {
+                    sanitizeEmail();
+                }
+                if (touched) {
+                    renderFeedback();
+                }
+            });
+
+            input.addEventListener('blur', () => {
+                touched = true;
+                renderFeedback();
+            });
+        };
+
+        setupValidation(emailInput, validators.email);
+        setupValidation(passwordInput, validators.password);
+    });
+</script>
 <?php pie(); ?>
