@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../modelos/Sitio.php';
 require_once __DIR__ . '/../modelos/Servicio.php';
+require_once __DIR__ . '/../modelos/Setting.php';
 class AdminController {
     private $modelo;
     private $serviciosModelo;
@@ -117,6 +118,32 @@ class AdminController {
             }
         }
         header('Location: index.php?ruta=admin/servicios'); exit;
+    }
+
+    public function configuracion() {
+        if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
+        $backgroundImage = getBackgroundImageUrl();
+        $currentSetting = getSetting('background_image', '/assets/img/default-bg.jpg');
+        require __DIR__ . '/../vistas/admin/configuracion.php';
+    }
+
+    public function guardarConfiguracion() {
+        if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
+        if (!empty($_FILES['background_image']['tmp_name'])) {
+            $uploadDir = __DIR__ . '/../public/uploads/settings';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            $destination = $uploadDir . '/background.jpg';
+            $allowed = ['image/jpeg', 'image/png', 'image/webp'];
+            $type = mime_content_type($_FILES['background_image']['tmp_name']);
+            if (in_array($type, $allowed, true)) {
+                if (move_uploaded_file($_FILES['background_image']['tmp_name'], $destination)) {
+                    setSetting('background_image', '/uploads/settings/background.jpg');
+                }
+            }
+        }
+        header('Location: index.php?ruta=admin/configuracion'); exit;
     }
 }
 ?>

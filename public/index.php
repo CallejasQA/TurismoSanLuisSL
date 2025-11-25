@@ -8,10 +8,31 @@ require_once __DIR__ . '/../controladores/AdminController.php';
 require_once __DIR__ . '/../controladores/ClienteController.php';
 require_once __DIR__ . '/../controladores/ReservaController.php';
 require_once __DIR__ . '/../controladores/ValoracionController.php';
+require_once __DIR__ . '/../modelos/Setting.php';
 
 $ruta = trim($_GET['ruta'] ?? 'inicio', '/');
 
-function cabecera($titulo = 'Turismo San Luis') {
+function getSetting($key, $default = null) {
+    return Setting::get($key, $default);
+}
+
+function setSetting($key, $value) {
+    return Setting::set($key, $value);
+}
+
+function getBackgroundImageUrl() {
+    $default = '/assets/img/default-bg.jpg';
+    $stored = getSetting('background_image', null);
+    if (is_string($stored) && $stored !== '') {
+        $path = __DIR__ . $stored;
+        if (file_exists($path)) {
+            return $stored;
+        }
+    }
+    return $default;
+}
+
+function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bodyClass = '') {
     $links = [
         ['href' => 'index.php', 'label' => 'Inicio'],
         ['href' => 'index.php?ruta=auth/register', 'label' => 'Afíliate'],
@@ -41,9 +62,17 @@ function cabecera($titulo = 'Turismo San Luis') {
         $links[] = ['href' => 'index.php?ruta=auth/login', 'label' => 'Ingresar'];
     }
 
+    $stylesheets = array_merge(['../assets/css/style.css'], $extraCss);
+    $cssLinks = '';
+    foreach ($stylesheets as $css) {
+        $cssLinks .= '<link rel="stylesheet" href="' . htmlspecialchars($css) . '">';
+    }
+
+    $bodyAttr = $bodyClass !== '' ? ' class="' . htmlspecialchars($bodyClass) . '"' : '';
+
     echo '<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
         . '<title>' . htmlspecialchars($titulo) . '</title>'
-        . '<link rel="stylesheet" href="../assets/css/style.css"></head><body>'
+        . $cssLinks . '</head><body' . $bodyAttr . '>'
         . '<header class="site-header"><div class="container">'
         . '<a class="brand" href="index.php">Turismo San Luis</a>'
         . '<button class="nav-toggle" aria-expanded="false" aria-label="Abrir menú" aria-controls="primary-menu">'
@@ -156,6 +185,14 @@ switch ($ruta) {
     case 'admin/servicios/eliminar':
         $ctrl = new AdminController();
         $ctrl->eliminarServicio();
+        break;
+    case 'admin/configuracion':
+        $ctrl = new AdminController();
+        $ctrl->configuracion();
+        break;
+    case 'admin/configuracion/guardar':
+        $ctrl = new AdminController();
+        $ctrl->guardarConfiguracion();
         break;
     case 'admin/reservas':
         $ctrl = new ReservaController();
