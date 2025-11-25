@@ -13,7 +13,7 @@ cabecera('Ingresar', ['css/auth.css'], 'auth-page');
             <label class="auth-label">
                 Email
                 <div class="auth-input-wrapper">
-                    <input type="email" name="email" class="auth-input" autocomplete="email" required aria-describedby="email-feedback">
+                    <input type="email" name="email" class="auth-input" autocomplete="email" required aria-describedby="email-feedback" data-feedback="email-feedback">
                     <span class="validation-icon" aria-hidden="true"></span>
                 </div>
                 <div class="field-feedback is-hidden" id="email-feedback" role="status" aria-live="polite"></div>
@@ -21,7 +21,7 @@ cabecera('Ingresar', ['css/auth.css'], 'auth-page');
             <label class="auth-label">
                 Contraseña
                 <div class="auth-input-wrapper">
-                    <input type="password" name="password" class="auth-input" autocomplete="current-password" required aria-describedby="password-feedback">
+                    <input type="password" name="password" class="auth-input" autocomplete="current-password" required aria-describedby="password-feedback" data-feedback="password-feedback">
                     <span class="validation-icon" aria-hidden="true"></span>
                 </div>
                 <div class="field-feedback is-hidden" id="password-feedback" role="status" aria-live="polite"></div>
@@ -81,8 +81,8 @@ cabecera('Ingresar', ['css/auth.css'], 'auth-page');
             }
         };
 
-        const setupValidation = (input, validator) => {
-            const feedback = input.closest('.auth-label').querySelector('.field-feedback');
+        const setupValidation = (input, validator, sanitize) => {
+            const feedback = document.getElementById(input.dataset.feedback);
             const icon = input.closest('.auth-input-wrapper').querySelector('.validation-icon');
             let touched = false;
 
@@ -108,8 +108,8 @@ cabecera('Ingresar', ['css/auth.css'], 'auth-page');
             };
 
             input.addEventListener('input', () => {
-                if (input === emailInput) {
-                    sanitizeEmail();
+                if (sanitize) {
+                    sanitize();
                 }
                 if (touched) {
                     renderFeedback();
@@ -122,7 +122,7 @@ cabecera('Ingresar', ['css/auth.css'], 'auth-page');
             });
         };
 
-        setupValidation(emailInput, validators.email);
+        setupValidation(emailInput, validators.email, sanitizeEmail);
         setupValidation(passwordInput, validators.password);
     });
 </script>

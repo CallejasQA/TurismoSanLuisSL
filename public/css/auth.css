@@ -95,6 +95,12 @@ body.auth-page {
     align-items: center;
 }
 
+.auth-input-grid {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .auth-label {
     display: flex;
     flex-direction: column;
