@@ -169,8 +169,15 @@
     if (slides.length === 0) return;
 
     let index = 0;
+    const getGap = () => {
+      const styles = getComputedStyle(track);
+      return parseFloat(styles.columnGap || styles.gap || '0');
+    };
+
+    const slideSize = () => slides[0].getBoundingClientRect().width + getGap();
+
     const update = () => {
-      track.style.transform = `translateX(-${index * 100}%)`;
+      track.style.transform = `translateX(-${index * slideSize()}px)`;
     };
 
     const goNext = () => { index = (index + 1) % slides.length; update(); };
@@ -187,6 +194,7 @@
     let interval = setInterval(goNext, 7000);
     slider.addEventListener('mouseenter', () => clearInterval(interval));
     slider.addEventListener('mouseleave', () => interval = setInterval(goNext, 7000));
+    window.addEventListener('resize', update);
   })();
 </script>
 <?php endif; ?>
