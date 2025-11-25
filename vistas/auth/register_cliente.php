@@ -37,7 +37,7 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                 <div class="field-feedback is-hidden" id="email-feedback" role="status" aria-live="polite"></div>
             </label>
             <label class="auth-label">Municipio de origen
-                <input type="text" name="municipio_origen" class="auth-input" value="<?php echo htmlspecialchars($_POST['municipio_origen'] ?? ''); ?>">
+                <input type="text" name="municipio_origen" class="auth-input" value="<?php echo htmlspecialchars($_POST['municipio_origen'] ?? ''); ?>" maxlength="100">
             </label>
             <label class="auth-label">Contraseña
                 <div class="auth-input-wrapper">

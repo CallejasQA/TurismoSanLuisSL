@@ -67,6 +67,7 @@ function manejar_registro_cliente() {
     $primerApellidoLen = $length($valores['primer_apellido']);
     $cedulaLen = $length($valores['cedula']);
     $telefonoLen = $length($valores['telefono_numero']);
+    $municipioOrigenLen = $length($valores['municipio_origen']);
 
     if ($primerNombreLen < 3 || $primerNombreLen > 30) {
         $errores[] = 'El primer nombre debe tener entre 3 y 30 caracteres.';
@@ -84,6 +85,9 @@ function manejar_registro_cliente() {
         $errores[] = 'El número de celular es obligatorio.';
     } elseif ($telefonoLen > 15) {
         $errores[] = 'El número de celular no puede exceder 15 caracteres.';
+    }
+    if ($municipioOrigenLen > 100) {
+        $errores[] = 'El municipio de origen no puede exceder 100 caracteres.';
     }
     if ($clienteModelo->existeEmail($valores['email'])) {
         $errores[] = 'El correo ya está registrado.';
