@@ -1,6 +1,11 @@
 <?php cabecera('Configuración', [], 'admin-page'); ?>
 <h2>Imagen de fondo</h2>
 <p>Administra la imagen que se muestra en las páginas de autenticación.</p>
+<ul class="upload-hints">
+    <li>Formatos permitidos: JPG, PNG o WebP.</li>
+    <li>Peso máximo recomendado: 2 MB.</li>
+    <li>Resolución sugerida: 1920 × 1080 px o superior para evitar pixelación.</li>
+</ul>
 <form action="index.php?ruta=admin/configuracion/guardar" method="post" enctype="multipart/form-data" class="config-form">
     <label for="background_image">Selecciona una imagen (JPG, PNG o WebP):</label>
     <input type="file" name="background_image" id="background_image" accept="image/*" required>
@@ -35,6 +40,8 @@
     cursor: pointer;
 }
 .config-form button:hover { background: #144a22; }
+.upload-hints { margin: 10px 0 0 16px; color: #444; line-height: 1.4; }
+.upload-hints li { margin-bottom: 4px; }
 .preview-card { margin-top: 12px; }
 </style>
 <?php pie(); ?>

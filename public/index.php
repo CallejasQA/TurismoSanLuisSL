@@ -53,6 +53,7 @@ function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bo
             $links[] = ['href' => 'index.php?ruta=admin/afiliaciones', 'label' => 'Afiliaciones'];
             $links[] = ['href' => 'index.php?ruta=admin/alojamientos', 'label' => 'Alojamientos'];
             $links[] = ['href' => 'index.php?ruta=admin/servicios', 'label' => 'Servicios'];
+            $links[] = ['href' => 'index.php?ruta=admin/configuracion', 'label' => 'Configuración'];
             $links[] = ['href' => 'index.php?ruta=admin/clientes', 'label' => 'Clientes'];
             $links[] = ['href' => 'index.php?ruta=admin/reservas', 'label' => 'Reservas'];
             $links[] = ['href' => 'index.php?ruta=admin/valoraciones', 'label' => 'Comentarios'];
