@@ -129,30 +129,42 @@ class AdminController {
 
     public function guardarConfiguracion() {
         if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
-        if (!empty($_FILES['background_image']['tmp_name'])) {
+        $file = $_FILES['background_image'] ?? null;
+
+        if ($file && ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_OK && !empty($file['tmp_name'])) {
             $uploadDir = __DIR__ . '/../public/uploads/settings';
             if (!is_dir($uploadDir)) {
                 mkdir($uploadDir, 0755, true);
             }
+
             $allowed = [
                 'image/jpeg' => 'jpg',
-                'image/png' => 'png',
-                'image/webp' => 'webp'
+                'image/jpg'  => 'jpg',
+                'image/pjpeg'=> 'jpg',
+                'image/png'  => 'png',
+                'image/x-png'=> 'png',
+                'image/webp' => 'webp',
+                'image/gif'  => 'gif'
             ];
-            $type = mime_content_type($_FILES['background_image']['tmp_name']);
-            $maxSize = 2 * 1024 * 1024; // 2 MB
-            if (isset($allowed[$type]) && $_FILES['background_image']['size'] <= $maxSize) {
-                $extension = $allowed[$type];
-                $destination = "$uploadDir/background.$extension";
 
-                foreach (glob($uploadDir . '/background.*') as $existing) {
-                    if (is_file($existing)) {
-                        unlink($existing);
+            $type = mime_content_type($file['tmp_name']);
+            $maxSize = 2 * 1024 * 1024; // 2 MB
+
+            if (isset($allowed[$type]) && $file['size'] <= $maxSize) {
+                $extension = $allowed[$type];
+                $newFileName = 'background-' . time() . '.' . $extension;
+                $destination = $uploadDir . '/' . $newFileName;
+
+                foreach (['/background-*.*', '/background.*'] as $pattern) {
+                    foreach (glob($uploadDir . $pattern) as $existing) {
+                        if (is_file($existing)) {
+                            unlink($existing);
+                        }
                     }
                 }
 
-                if (move_uploaded_file($_FILES['background_image']['tmp_name'], $destination)) {
-                    setSetting('background_image', '/uploads/settings/' . basename($destination));
+                if (move_uploaded_file($file['tmp_name'], $destination)) {
+                    setSetting('background_image', '/uploads/settings/' . $newFileName);
                 }
             }
         }

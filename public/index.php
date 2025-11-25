@@ -33,15 +33,25 @@ function getBackgroundImageUrl() {
     $default = '/assets/img/default-bg.jpg';
     $stored = getSetting('background_image', null);
 
-    $candidateUrl = $default;
-    $candidatePath = __DIR__ . $default;
+    $candidates = [];
 
     if (is_string($stored) && $stored !== '') {
-        $path = __DIR__ . $stored;
-        if (file_exists($path)) {
-            return publicUrl($stored);
+        $candidates[] = $stored;
+    }
+
+    $candidates[] = $default;
+
+    foreach ($candidates as $relativePath) {
+        $absolutePath = __DIR__ . $relativePath;
+
+        if (file_exists($absolutePath)) {
+            $url = publicUrl($relativePath);
+            $version = filemtime($absolutePath);
+
+            return $version ? $url . '?v=' . $version : $url;
         }
     }
+
     return publicUrl($default);
 }
 

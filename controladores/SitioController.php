@@ -125,8 +125,12 @@ class SitioController {
 
         $allowed = [
             'image/jpeg' => 'jpg',
+            'image/jpg'  => 'jpg',
+            'image/pjpeg'=> 'jpg',
             'image/png'  => 'png',
-            'image/webp' => 'webp'
+            'image/x-png'=> 'png',
+            'image/webp' => 'webp',
+            'image/gif'  => 'gif'
         ];
 
         $mimeType = mime_content_type($file['tmp_name']);
