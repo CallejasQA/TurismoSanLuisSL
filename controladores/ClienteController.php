@@ -41,10 +41,7 @@ class ClienteController {
 
     public function adminEditar() {
         $this->soloAdmin();
-        $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
-        if (!$id) { header('Location: index.php?ruta=admin/clientes'); exit; }
-        $cliente = $this->clientesModelo->encontrar($id);
-        if (!$cliente) { header('Location: index.php?ruta=admin/clientes'); exit; }
+        [$id, $cliente] = $this->obtenerClienteDesdeRequest();
 
         $valores = array_merge($this->valoresBase(), $cliente);
 
@@ -260,6 +257,16 @@ class ClienteController {
 
     private function soloAdmin() {
         if (($_SESSION['usuario_rol'] ?? '') !== 'admin') { header('Location: index.php'); exit; }
+    }
+
+    private function obtenerClienteDesdeRequest() {
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : null;
+        if (!$id) { header('Location: index.php?ruta=admin/clientes'); exit; }
+
+        $cliente = $this->clientesModelo->encontrar($id);
+        if (!$cliente) { header('Location: index.php?ruta=admin/clientes'); exit; }
+
+        return [$id, $cliente];
     }
 
     private function soloCliente() {
