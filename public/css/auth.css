@@ -45,7 +45,6 @@ body.auth-page {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    filter: brightness(0.75);
     z-index: 0;
 }
 
