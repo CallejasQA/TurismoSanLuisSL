@@ -15,6 +15,8 @@ body.auth-page {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-color: #eaf3ec;
     color: var(--text);
     min-height: 100vh;
     position: relative;
@@ -25,7 +27,7 @@ body.auth-page::before {
     content: '';
     position: fixed;
     inset: 0;
-    background: linear-gradient(120deg, rgba(26,94,42,0.38), rgba(255,255,255,0.82));
+    background: linear-gradient(115deg, rgba(26, 94, 42, 0.45), rgba(255, 255, 255, 0.9));
     backdrop-filter: blur(2px);
     z-index: 0;
 }
@@ -38,17 +40,19 @@ body.auth-page::before {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 32px 16px;
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 48px 16px 64px;
     gap: 20px;
 }
 
 .auth-card {
-    width: min(100%, 640px);
+    width: min(100%, 540px);
     background: rgba(255, 255, 255, 0.94);
     border-radius: 18px;
     padding: 28px;
     box-shadow: var(--card-shadow);
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(26, 94, 42, 0.08);
     backdrop-filter: blur(6px);
 }
 
@@ -186,4 +190,12 @@ body.auth-page::before {
 @media (min-width: 768px) {
     .auth-card { padding: 32px 36px; }
     .auth-button { width: auto; padding-inline: 26px; }
+}
+
+@media (min-width: 992px) {
+    .auth-shell {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
 }

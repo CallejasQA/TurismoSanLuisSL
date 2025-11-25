@@ -23,13 +23,29 @@ function setSetting($key, $value) {
 function getBackgroundImageUrl() {
     $default = '/assets/img/default-bg.jpg';
     $stored = getSetting('background_image', null);
+
+    $candidateUrl = $default;
+    $candidatePath = __DIR__ . $default;
+
     if (is_string($stored) && $stored !== '') {
-        $path = __DIR__ . $stored;
-        if (file_exists($path)) {
-            return $stored;
+        $storedPath = __DIR__ . $stored;
+        if (file_exists($storedPath)) {
+            $candidateUrl = $stored;
+            $candidatePath = $storedPath;
         }
     }
-    return $default;
+
+    if (!file_exists($candidatePath)) {
+        return $default;
+    }
+
+    $version = @filemtime($candidatePath);
+    if ($version) {
+        $glue = str_contains($candidateUrl, '?') ? '&' : '?';
+        return $candidateUrl . $glue . 'v=' . $version;
+    }
+
+    return $candidateUrl;
 }
 
 function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bodyClass = '') {
