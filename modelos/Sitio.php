@@ -131,6 +131,18 @@ class Sitio {
         return $stmt->fetchAll();
     }
 
+    public function operadoresActivos(): array {
+        $sql = "SELECT DISTINCT COALESCE(af.nombre_negocio, u.nombre) AS operador "
+             . "FROM alojamientos a "
+             . "JOIN usuarios u ON u.id = a.propietario_id "
+             . "LEFT JOIN afiliados af ON af.usuario_id = a.propietario_id AND af.estado = 'aprobado' "
+             . "WHERE a.estado IN ('aprobado','activo') "
+             . "ORDER BY operador";
+
+        $stmt = $this->db->query($sql);
+        return array_filter(array_map('trim', $stmt->fetchAll(PDO::FETCH_COLUMN)));
+    }
+
     public function alojamientoPublicado($id) {
         $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, "
              . "COALESCE(af.nombre_negocio, u.nombre) AS nombre_negocio, "

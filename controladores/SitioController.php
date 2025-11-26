@@ -30,6 +30,7 @@ class SitioController {
         $sitios = $aplicaFiltros ? $this->modelo->alojamientosPublicos($filtros) : $sitiosBase;
         $recomendados = array_slice($sitiosBase, 0, 4);
         $slider = $this->modelo->alojamientosSlider();
+        $operadores = $this->modelo->operadoresActivos();
         require __DIR__ . '/../vistas/public/home.php';
     }
 

@@ -60,7 +60,13 @@
       </div>
       <div class="field">
         <label for="buscar-operador">Operado por</label>
-        <input id="buscar-operador" type="text" name="operador" placeholder="Nombre del operador" value="<?= htmlspecialchars($_GET['operador'] ?? '') ?>" />
+        <?php $operadorSeleccionado = $_GET['operador'] ?? ''; ?>
+        <select id="buscar-operador" name="operador">
+          <option value="" <?= $operadorSeleccionado === '' ? 'selected' : '' ?>>Cualquier operador</option>
+          <?php foreach ($operadores ?? [] as $operador): ?>
+            <option value="<?= htmlspecialchars($operador) ?>" <?= $operadorSeleccionado === $operador ? 'selected' : '' ?>><?= htmlspecialchars($operador) ?></option>
+          <?php endforeach; ?>
+        </select>
       </div>
       <div class="field">
         <label for="buscar-estrellas">Experiencia mínima</label>
