@@ -5,6 +5,7 @@ require_once __DIR__ . '/../modelos/Setting.php';
 class AdminController {
     private $modelo;
     private $serviciosModelo;
+    private $servicioNombreMax = 60;
     private $serviciosBase = [
         'WiFi','Parqueadero','Piscina','Cocina','Baño privado','Agua caliente','Televisión','Aire acondicionado','Ventilador','Desayuno incluido',
         'Recepción 24 horas','Zona BBQ','Jacuzzi','Sauna','Restaurante','Bar','Terraza','Jardín','Servicio de transporte','Permitido fumar (zonas designadas)',
@@ -89,7 +90,8 @@ class AdminController {
         if ($_SERVER['REQUEST_METHOD']==='POST') {
             $nombre = trim($_POST['nombre'] ?? '');
             $nombre = preg_replace('/\s+/', ' ', $nombre);
-            if ($nombre !== '' && !$this->serviciosModelo->existeNombre($nombre)) {
+            $longitud = function_exists('mb_strlen') ? mb_strlen($nombre) : strlen($nombre);
+            if ($nombre !== '' && $longitud <= $this->servicioNombreMax && !$this->serviciosModelo->existeNombre($nombre)) {
                 $this->serviciosModelo->crear($nombre);
             }
         }
@@ -102,7 +104,14 @@ class AdminController {
             $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
             $nombre = trim($_POST['nombre'] ?? '');
             $nombre = preg_replace('/\s+/', ' ', $nombre);
-            if ($id && $nombre !== '' && $this->serviciosModelo->encontrarPorId($id) && !$this->serviciosModelo->existeNombreEnOtro($nombre, $id)) {
+            $longitud = function_exists('mb_strlen') ? mb_strlen($nombre) : strlen($nombre);
+            if (
+                $id &&
+                $nombre !== '' &&
+                $longitud <= $this->servicioNombreMax &&
+                $this->serviciosModelo->encontrarPorId($id) &&
+                !$this->serviciosModelo->existeNombreEnOtro($nombre, $id)
+            ) {
                 $this->serviciosModelo->actualizar($id, $nombre);
             }
         }

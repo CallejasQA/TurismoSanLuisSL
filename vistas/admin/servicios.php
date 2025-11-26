@@ -8,7 +8,7 @@
     <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
       <div style="flex:1 1 260px;">
         <label for="nombre">Nombre del servicio</label>
-        <input type="text" id="nombre" name="nombre" required placeholder="Ej. WiFi premium">
+        <input type="text" id="nombre" name="nombre" required maxlength="60" placeholder="Ej. WiFi premium">
       </div>
       <div>
         <button type="submit">Agregar</button>
@@ -30,7 +30,7 @@
       <td>
         <form method="post" action="index.php?ruta=admin/servicios/actualizar" style="display:flex; gap:8px; align-items:center;">
           <input type="hidden" name="id" value="<?= htmlspecialchars($servicio['id']) ?>">
-          <input type="text" name="nombre" value="<?= htmlspecialchars($servicio['nombre']) ?>" required>
+          <input type="text" name="nombre" value="<?= htmlspecialchars($servicio['nombre']) ?>" required maxlength="60">
       </td>
       <td>
           <button type="submit" class="btn">Guardar</button>
