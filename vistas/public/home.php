@@ -47,18 +47,6 @@
     <form class="search-card" method="get" action="index.php#alojamientos">
       <input type="hidden" name="ruta" value="inicio">
       <div class="field">
-        <label for="buscar-donde">¿Dónde?</label>
-        <input id="buscar-donde" type="text" name="ubicacion" placeholder="Ej: Potrero de los Funes" value="<?= htmlspecialchars($_GET['ubicacion'] ?? '') ?>" />
-      </div>
-      <div class="field">
-        <label for="buscar-fechas">Fechas</label>
-        <input id="buscar-fechas" type="text" name="fechas" placeholder="Llegada - Salida" />
-      </div>
-      <div class="field">
-        <label for="buscar-huespedes">Huéspedes</label>
-        <input id="buscar-huespedes" type="number" name="huespedes" min="1" placeholder="2" />
-      </div>
-      <div class="field">
         <label for="buscar-operador">Operado por</label>
         <?php $operadorSeleccionado = $_GET['operador'] ?? ''; ?>
         <select id="buscar-operador" name="operador">
