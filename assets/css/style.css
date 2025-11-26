@@ -74,9 +74,6 @@ img {
   display: flex;
   align-items: center;
   gap: 14px;
-}
-
-.auth-page .nav-menu {
   flex-wrap: wrap;
 }
 
