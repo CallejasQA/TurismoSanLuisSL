@@ -71,19 +71,45 @@ class Sitio {
         return $stmt->execute([$id]);
     }
 
-    public function alojamientosPublicos() {
+    public function alojamientosPublicos(array $filtros = []) {
+        $condiciones = ["a.estado IN ('aprobado','activo')"];
+        $having = [];
+        $params = [];
+        $havingParams = [];
+
+        if (!empty($filtros['ubicacion'])) {
+            $condiciones[] = 'a.ubicacion LIKE ?';
+            $params[] = '%' . $filtros['ubicacion'] . '%';
+        }
+
+        if (!empty($filtros['operador'])) {
+            $condiciones[] = 'COALESCE(af.nombre_negocio, u.nombre) LIKE ?';
+            $params[] = '%' . $filtros['operador'] . '%';
+        }
+
+        if (!empty($filtros['min_estrellas'])) {
+            $having[] = 'AVG(v.estrellas) >= ?';
+            $havingParams[] = max(1, min(5, (int) $filtros['min_estrellas']));
+        }
+
         $sql = "SELECT a.id, a.nombre, a.descripcion, a.ubicacion, a.precio_noche, a.rango_precio, a.imagen, a.estado, a.destacado_slider, "
              . "COALESCE(af.nombre_negocio, u.nombre) AS nombre_negocio, "
+             . "AVG(v.estrellas) AS promedio_estrellas, "
+             . "COUNT(v.id) AS total_valoraciones, "
              . "GROUP_CONCAT(s.nombre ORDER BY s.nombre SEPARATOR '||') AS servicios "
              . "FROM alojamientos a "
              . "JOIN usuarios u ON u.id = a.propietario_id "
              . "LEFT JOIN afiliados af ON af.usuario_id = a.propietario_id AND af.estado = 'aprobado' "
              . "LEFT JOIN alojamiento_servicio als ON als.alojamiento_id = a.id "
              . "LEFT JOIN servicios s ON s.id = als.servicio_id "
-             . "WHERE a.estado IN ('aprobado','activo') "
+             . "LEFT JOIN valoraciones v ON v.alojamiento_id = a.id "
+             . "WHERE " . implode(' AND ', $condiciones) . " "
              . "GROUP BY a.id "
+             . (!empty($having) ? 'HAVING ' . implode(' AND ', $having) . ' ' : '')
              . "ORDER BY a.creado_en DESC";
-        $stmt = $this->db->query($sql);
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(array_merge($params, $havingParams));
         return array_map([$this, 'adjuntarServicios'], $stmt->fetchAll());
     }
 

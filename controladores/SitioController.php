@@ -18,7 +18,13 @@ class SitioController {
     }
 
     public function inicio() {
-        $sitios = $this->modelo->alojamientosPublicos();
+        $filtros = [
+            'ubicacion' => trim($_GET['ubicacion'] ?? ''),
+            'operador' => trim($_GET['operador'] ?? ''),
+            'min_estrellas' => isset($_GET['estrellas']) ? (int) $_GET['estrellas'] : null,
+        ];
+
+        $sitios = $this->modelo->alojamientosPublicos($filtros);
         $slider = $this->modelo->alojamientosSlider();
         require __DIR__ . '/../vistas/public/home.php';
     }

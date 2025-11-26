@@ -48,7 +48,7 @@
       <input type="hidden" name="ruta" value="inicio">
       <div class="field">
         <label for="buscar-donde">¿Dónde?</label>
-        <input id="buscar-donde" type="text" name="ubicacion" placeholder="Ej: Potrero de los Funes" />
+        <input id="buscar-donde" type="text" name="ubicacion" placeholder="Ej: Potrero de los Funes" value="<?= htmlspecialchars($_GET['ubicacion'] ?? '') ?>" />
       </div>
       <div class="field">
         <label for="buscar-fechas">Fechas</label>
@@ -57,6 +57,20 @@
       <div class="field">
         <label for="buscar-huespedes">Huéspedes</label>
         <input id="buscar-huespedes" type="number" name="huespedes" min="1" placeholder="2" />
+      </div>
+      <div class="field">
+        <label for="buscar-operador">Operado por</label>
+        <input id="buscar-operador" type="text" name="operador" placeholder="Nombre del operador" value="<?= htmlspecialchars($_GET['operador'] ?? '') ?>" />
+      </div>
+      <div class="field">
+        <label for="buscar-estrellas">Experiencia mínima</label>
+        <?php $estrellasSeleccionadas = isset($_GET['estrellas']) ? (int) $_GET['estrellas'] : null; ?>
+        <select id="buscar-estrellas" name="estrellas">
+          <option value="">Cualquier calificación</option>
+          <?php for ($i = 1; $i <= 5; $i++): ?>
+            <option value="<?= $i ?>" <?= $estrellasSeleccionadas === $i ? 'selected' : '' ?>><?= $i ?> estrella<?= $i > 1 ? 's' : '' ?> o más</option>
+          <?php endfor; ?>
+        </select>
       </div>
       <div class="field">
         <label>&nbsp;</label>
@@ -131,6 +145,14 @@
             <p class="pill"><?= htmlspecialchars(ucfirst($s['estado'])) ?></p>
             <h3><?= htmlspecialchars($s['nombre']) ?></h3>
             <p class="muted"><?= htmlspecialchars($s['ubicacion'] ?: 'Ubicación por definir') ?></p>
+            <?php if (!empty($s['total_valoraciones'])): ?>
+              <div class="rating" aria-label="Calificación promedio de los huéspedes">
+                <span class="rating__score">⭐ <?= number_format((float) ($s['promedio_estrellas'] ?? 0), 1) ?></span>
+                <span class="rating__count">(<?= (int) $s['total_valoraciones'] ?> reseña<?= ((int) $s['total_valoraciones']) !== 1 ? 's' : '' ?>)</span>
+              </div>
+            <?php else: ?>
+              <p class="muted">Sin calificaciones todavía</p>
+            <?php endif; ?>
             <?php if (!empty($s['nombre_negocio'])): ?>
               <div class="business-chip" aria-label="Operado por">
                 <span class="business-chip__label">Operado por</span>
