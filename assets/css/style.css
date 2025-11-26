@@ -76,6 +76,10 @@ img {
   gap: 14px;
 }
 
+.auth-page .nav-menu {
+  flex-wrap: wrap;
+}
+
 .nav-menu a {
   color: var(--texto-principal);
   text-decoration: none;
