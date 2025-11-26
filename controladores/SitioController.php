@@ -24,7 +24,11 @@ class SitioController {
             'min_estrellas' => isset($_GET['estrellas']) ? (int) $_GET['estrellas'] : null,
         ];
 
-        $sitios = $this->modelo->alojamientosPublicos($filtros);
+        $aplicaFiltros = $filtros['ubicacion'] !== '' || $filtros['operador'] !== '' || $filtros['min_estrellas'] !== null;
+
+        $sitiosBase = $this->modelo->alojamientosPublicos();
+        $sitios = $aplicaFiltros ? $this->modelo->alojamientosPublicos($filtros) : $sitiosBase;
+        $recomendados = array_slice($sitiosBase, 0, 4);
         $slider = $this->modelo->alojamientosSlider();
         require __DIR__ . '/../vistas/public/home.php';
     }

@@ -44,7 +44,7 @@
     <p class="eyebrow">Escápate a la naturaleza</p>
     <h1>Encuentra alojamientos rodeados de naturaleza</h1>
     <p class="lede">Explora hospedajes con encanto natural, tarifas claras y anfitriones verificados. Inspírate con cabañas, estancias rurales y refugios junto al río para tu próxima aventura.</p>
-    <form class="search-card" method="get" action="index.php">
+    <form class="search-card" method="get" action="index.php#alojamientos">
       <input type="hidden" name="ruta" value="inicio">
       <div class="field">
         <label for="buscar-donde">¿Dónde?</label>
@@ -83,8 +83,6 @@
     </div>
   </div>
 </section>
-
-<?php $recomendados = array_slice($sitios, 0, 4); ?>
 <section class="carousel" aria-label="Recomendados">
   <div class="section-header">
     <h2>Recomendados para ti</h2>
