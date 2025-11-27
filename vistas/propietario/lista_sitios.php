@@ -6,7 +6,8 @@
 <?php if (!empty($sitios)): foreach($sitios as $s): ?>
 <tr>
 <td><?= htmlspecialchars($s['id']) ?></td>
-<td><?php if (!empty($s['imagen'])): ?><img src="<?= htmlspecialchars($s['imagen']) ?>" style="width:100px;border-radius:6px;"><?php endif; ?></td>
+<?php $imagenUrl = assetUrl($s['imagen'] ?? ''); ?>
+<td><?php if ($imagenUrl !== ''): ?><img src="<?= htmlspecialchars($imagenUrl) ?>" style="width:100px;border-radius:6px;"><?php endif; ?></td>
 <td><?= htmlspecialchars($s['nombre']) ?></td>
 <td><?= htmlspecialchars($s['ubicacion']) ?></td>
 <td>$<?= number_format($s['precio_noche'],2) ?></td>

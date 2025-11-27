@@ -1,8 +1,9 @@
 <?php cabecera('Detalle de alojamiento'); ?>
 <article class="detalle">
   <div class="detalle__media">
-    <?php if (!empty($sitio['imagen'])): ?>
-      <img src="<?= htmlspecialchars($sitio['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($sitio['nombre']) ?>">
+    <?php $imagenUrl = assetUrl($sitio['imagen'] ?? ''); ?>
+    <?php if ($imagenUrl !== ''): ?>
+      <img src="<?= htmlspecialchars($imagenUrl) ?>" alt="Imagen de <?= htmlspecialchars($sitio['nombre']) ?>">
     <?php else: ?>
       <div class="card__image card__image--placeholder">Sin imagen</div>
     <?php endif; ?>

@@ -17,8 +17,9 @@
     <div class="slider__track" data-track>
       <?php foreach ($slider as $destacado): ?>
         <article class="slide-card">
-          <?php if (!empty($destacado['imagen'])): ?>
-            <img src="<?= htmlspecialchars($destacado['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($destacado['nombre']) ?>">
+          <?php $destacadoImg = assetUrl($destacado['imagen'] ?? ''); ?>
+          <?php if ($destacadoImg !== ''): ?>
+            <img src="<?= htmlspecialchars($destacadoImg) ?>" alt="Imagen de <?= htmlspecialchars($destacado['nombre']) ?>">
           <?php else: ?>
             <div class="slide-card__placeholder">Sin imagen</div>
           <?php endif; ?>
@@ -90,8 +91,9 @@
     <div class="carousel__track">
       <?php foreach ($recomendados as $s): ?>
         <article class="carousel__card">
-          <?php if (!empty($s['imagen'])): ?>
-            <img class="carousel__image" src="<?= htmlspecialchars($s['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($s['nombre']) ?>">
+          <?php $recomendadoImg = assetUrl($s['imagen'] ?? ''); ?>
+          <?php if ($recomendadoImg !== ''): ?>
+            <img class="carousel__image" src="<?= htmlspecialchars($recomendadoImg) ?>" alt="Imagen de <?= htmlspecialchars($s['nombre']) ?>">
           <?php else: ?>
             <div class="card__image card__image--placeholder">Naturaleza</div>
           <?php endif; ?>
@@ -128,8 +130,9 @@
     <div class="card-grid">
       <?php foreach ($sitios as $s): ?>
         <article class="card">
-          <?php if (!empty($s['imagen'])): ?>
-            <img class="card__image" src="<?= htmlspecialchars($s['imagen']) ?>" alt="Imagen de <?= htmlspecialchars($s['nombre']) ?>">
+          <?php $imagenCard = assetUrl($s['imagen'] ?? ''); ?>
+          <?php if ($imagenCard !== ''): ?>
+            <img class="card__image" src="<?= htmlspecialchars($imagenCard) ?>" alt="Imagen de <?= htmlspecialchars($s['nombre']) ?>">
           <?php else: ?>
             <div class="card__image card__image--placeholder">Sin imagen</div>
           <?php endif; ?>

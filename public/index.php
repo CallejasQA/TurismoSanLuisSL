@@ -29,6 +29,25 @@ function publicUrl(string $path): string {
     return $base . $normalized;
 }
 
+function assetUrl(?string $path): string {
+    if (empty($path)) {
+        return '';
+    }
+
+    if (preg_match('#^(https?:)?//#i', $path) || strpos($path, 'data:') === 0) {
+        return $path;
+    }
+
+    $normalized = '/' . ltrim($path, '/');
+
+    if (strpos($normalized, '/public/') === 0) {
+        $normalized = substr($normalized, strlen('/public'));
+        $normalized = '/' . ltrim($normalized, '/');
+    }
+
+    return publicUrl($normalized);
+}
+
 function getBackgroundImageUrl() {
     $default = '/assets/img/default-bg.jpg';
     $stored = getSetting('background_image', null);
