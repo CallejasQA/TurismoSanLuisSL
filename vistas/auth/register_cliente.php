@@ -33,7 +33,7 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
             </label>
             <label class="auth-label">Cédula
                 <div class="auth-input-wrapper">
-                    <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="\\d*" aria-describedby="cedula-feedback" data-feedback="cedula-feedback">
+                    <input type="text" name="cedula" class="auth-input" value="<?php echo htmlspecialchars($_POST['cedula'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="[0-9]{6,20}" aria-describedby="cedula-feedback" data-feedback="cedula-feedback">
                     <span class="validation-icon" aria-hidden="true"></span>
                 </div>
                 <div class="field-feedback is-hidden" id="cedula-feedback" role="status" aria-live="polite"></div>
@@ -46,7 +46,7 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                         <span class="validation-icon" aria-hidden="true"></span>
                     </div>
                     <div class="auth-input-wrapper">
-                        <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="\\d*" aria-describedby="telefono-numero-feedback" data-feedback="telefono-numero-feedback">
+                        <input type="text" name="telefono_numero" class="auth-input" value="<?php echo htmlspecialchars($_POST['telefono_numero'] ?? ''); ?>" required maxlength="20" inputmode="numeric" pattern="[0-9]{7,20}" aria-describedby="telefono-numero-feedback" data-feedback="telefono-numero-feedback">
                         <span class="validation-icon" aria-hidden="true"></span>
                     </div>
                 </div>
@@ -112,6 +112,13 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
             const clean = emailInput.value.replace(/\s+/g, '');
             if (clean !== emailInput.value) {
                 emailInput.value = clean;
+            }
+        };
+
+        const sanitizeMunicipio = (input) => {
+            const clean = input.value.replace(/[^\p{L}ñÑáéíóúÁÉÍÓÚ\s.'-]/gu, '');
+            if (clean !== input.value) {
+                input.value = clean;
             }
         };
 
@@ -232,8 +239,13 @@ cabecera('Registro de Cliente', ['css/auth.css'], 'auth-page');
                         return { valid: false, message: 'Debe tener entre 3 y 100 caracteres.' };
                     }
 
+                    if (!/^[\p{L}ñÑáéíóúÁÉÍÓÚ\s.'-]+$/u.test(value)) {
+                        return { valid: false, message: 'Solo se permiten letras y separadores.' };
+                    }
+
                     return { valid: true, message: 'Municipio válido.' };
-                }
+                },
+                sanitize: sanitizeMunicipio
             }
         };
 
