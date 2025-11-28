@@ -33,78 +33,116 @@ function iniciar_sesion($email,$password) {
     return ['success' => true, 'message' => ''];
 }
 
-function manejar_registro_afiliado() {
-    if ($_SERVER['REQUEST_METHOD'] !== 'POST') return false;
-    $pdo = Database::conexion();
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $nombre_negocio = trim($_POST['nombre_negocio'] ?? '');
-    $tipo = $_POST['tipo'] ?? '';
-    $direccion = trim($_POST['direccion'] ?? '');
-    $descripcion = trim($_POST['descripcion'] ?? '');
+ function manejar_registro_afiliado() {
+     if ($_SERVER['REQUEST_METHOD'] !== 'POST') return false;
 
-    $errores = [];
+     $pdo = Database::conexion();
 
-    $length = function (string $value) {
-        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
-    };
+     $sanitize = fn(string $value) => trim($value);
+     $inputs = [
+         'nombre_negocio' => $sanitize($_POST['nombre_negocio'] ?? ''),
+         'tipo' => trim($_POST['tipo'] ?? ''),
+         'direccion' => $sanitize($_POST['direccion'] ?? ''),
+         'descripcion' => $sanitize($_POST['descripcion'] ?? ''),
+         'email' => preg_replace('/\s+/', '', $_POST['email'] ?? ''),
+         'password' => $_POST['password'] ?? ''
+     ];
 
-    $nombreLen = $length($nombre_negocio);
-    $direccionLen = $length($direccion);
-    $descripcionLen = $length($descripcion);
-    $passwordLen = $length($password);
-    $emailLen = $length($email);
+     $errores = [];
 
-    if ($nombreLen < 3 || $nombreLen > 30) {
-        $errores[] = 'El nombre del negocio debe tener entre 3 y 30 caracteres.';
-    }
+     $length = function (string $value) {
+         return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
+     };
 
-    if ($direccionLen < 3 || $direccionLen > 80) {
-        $errores[] = 'La dirección debe tener entre 3 y 80 caracteres.';
-    }
+     $validarCampo = function (string $campo, callable $validator) use (&$errores, $inputs) {
+         $resultado = $validator($inputs[$campo]);
+         if ($resultado !== null) {
+             $errores[] = $resultado;
+         }
+     };
 
-    if ($descripcionLen < 3 || $descripcionLen > 300) {
-        $errores[] = 'La descripción debe tener entre 3 y 300 caracteres.';
-    }
+     $validarCampo('nombre_negocio', function (string $valor) use ($length) {
+         $len = $length($valor);
+         if ($len < 3 || $len > 30) {
+             return 'El nombre del negocio debe tener entre 3 y 30 caracteres.';
+         }
+         return null;
+     });
 
-    if ($email === '') {
-        $errores[] = 'El email es obligatorio.';
-    } elseif (preg_match('/\s/', $email)) {
-        $errores[] = 'El formato del correo no es válido.';
-    } elseif ($emailLen < 6 || $emailLen > 70) {
-        $errores[] = 'El correo debe tener entre 6 y 70 caracteres.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $errores[] = 'El formato del correo no es válido.';
-    }
+     $validarCampo('direccion', function (string $valor) use ($length) {
+         $len = $length($valor);
+         if ($len < 3 || $len > 80) {
+             return 'La dirección debe tener entre 3 y 80 caracteres.';
+         }
+         return null;
+     });
 
-    if ($password === '') {
-        $errores[] = 'La contraseña es obligatoria.';
-    } elseif ($passwordLen < 6 || $passwordLen > 20) {
-        $errores[] = 'La contraseña debe tener entre 6 y 20 caracteres.';
-    }
+     $validarCampo('descripcion', function (string $valor) use ($length) {
+         $len = $length($valor);
+         if ($len < 3 || $len > 300) {
+             return 'La descripción debe tener entre 3 y 300 caracteres.';
+         }
+         return null;
+     });
 
-    if ($tipo === '') {
-        $errores[] = 'Debe seleccionar un tipo de alojamiento.';
-    }
+     $validarCampo('email', function (string $valor) use ($length) {
+         if ($valor === '') {
+             return 'El email es obligatorio.';
+         }
+         if (preg_match('/\s/', $valor)) {
+             return 'El formato del correo no es válido.';
+         }
+         $len = $length($valor);
+         if ($len < 6 || $len > 70) {
+             return 'El correo debe tener entre 6 y 70 caracteres.';
+         }
+         if (!filter_var($valor, FILTER_VALIDATE_EMAIL)) {
+             return 'El formato del correo no es válido.';
+         }
+         return null;
+     });
 
-    if (!empty($errores)) {
-        return ['success' => false, 'message' => implode(' ', $errores)];
-    }
+     $validarCampo('password', function (string $valor) use ($length) {
+         if ($valor === '') {
+             return 'La contraseña es obligatoria.';
+         }
+         $len = $length($valor);
+         if ($len < 6 || $len > 20) {
+             return 'La contraseña debe tener entre 6 y 20 caracteres.';
+         }
+         return null;
+     });
 
-    $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email=? LIMIT 1'); $stmt->execute([$email]);
-    if ($stmt->fetch()) return ['success'=>false,'message'=>'El correo ya está registrado'];
-    try {
-        $hash = password_hash($password,PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare('INSERT INTO usuarios (nombre,email,password,rol,estado) VALUES (?,?,?,?,?)');
-        $stmt->execute([$nombre_negocio,$email,$hash,'propietario','activo']);
-        $usuario_id = $pdo->lastInsertId();
-        $stmt = $pdo->prepare('INSERT INTO afiliados (usuario_id,nombre_negocio,tipo,descripcion,direccion,estado) VALUES (?,?,?,?,?,?)');
-        $stmt->execute([$usuario_id,$nombre_negocio,$tipo,$descripcion,$direccion,'pendiente']);
-        return ['success'=>true,'message'=>'Solicitud enviada. Un administrador la revisará.'];
-    } catch (Exception $e) {
-        return ['success'=>false,'message'=>'Error: '.$e->getMessage()];
-    }
-}
+     $validarCampo('tipo', function (string $valor) {
+         $tiposPermitidos = ['Finca', 'Glamping', 'Hotel', 'Cabaña', 'Ecohotel'];
+         if ($valor === '') {
+             return 'Debe seleccionar un tipo de alojamiento.';
+         }
+         if (!in_array($valor, $tiposPermitidos, true)) {
+             return 'El tipo de alojamiento seleccionado no es válido.';
+         }
+         return null;
+     });
+
+     if (!empty($errores)) {
+         return ['success' => false, 'message' => implode(' ', $errores)];
+     }
+
+     $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE email=? LIMIT 1');
+     $stmt->execute([$inputs['email']]);
+     if ($stmt->fetch()) return ['success'=>false,'message'=>'El correo ya está registrado'];
+     try {
+         $hash = password_hash($inputs['password'],PASSWORD_DEFAULT);
+         $stmt = $pdo->prepare('INSERT INTO usuarios (nombre,email,password,rol,estado) VALUES (?,?,?,?,?)');
+         $stmt->execute([$inputs['nombre_negocio'],$inputs['email'],$hash,'propietario','activo']);
+         $usuario_id = $pdo->lastInsertId();
+         $stmt = $pdo->prepare('INSERT INTO afiliados (usuario_id,nombre_negocio,tipo,descripcion,direccion,estado) VALUES (?,?,?,?,?,?)');
+         $stmt->execute([$usuario_id,$inputs['nombre_negocio'],$inputs['tipo'],$inputs['descripcion'],$inputs['direccion'],'pendiente']);
+         return ['success'=>true,'message'=>'Solicitud enviada. Un administrador la revisará.'];
+     } catch (Exception $e) {
+         return ['success'=>false,'message'=>'Error: '.$e->getMessage()];
+     }
+ }
 
 function manejar_registro_cliente() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') return false;
