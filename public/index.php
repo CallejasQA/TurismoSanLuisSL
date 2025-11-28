@@ -298,10 +298,11 @@ switch ($ruta) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
             $password = $_POST['password'] ?? '';
-            if (iniciar_sesion($email, $password)) {
+            $resultado = iniciar_sesion($email, $password);
+            if (!empty($resultado['success'])) {
                 header('Location: index.php'); exit;
             } else {
-                $error = 'Credenciales inválidas';
+                $error = $resultado['message'] ?? 'No se pudo iniciar sesión.';
             }
         }
         require __DIR__ . '/../vistas/auth/login.php';

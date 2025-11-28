@@ -7,13 +7,30 @@ function iniciar_sesion($email,$password) {
     $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE email = ? LIMIT 1');
     $stmt->execute([$email]);
     $u = $stmt->fetch();
-    if ($u && password_verify($password,$u['password'])) {
-        $_SESSION['usuario_id'] = $u['id'];
-        $_SESSION['usuario_email'] = $u['email'];
-        $_SESSION['usuario_rol'] = $u['rol'];
-        return true;
+
+    if (!$u || !password_verify($password, $u['password'])) {
+        return ['success' => false, 'message' => 'Credenciales inválidas'];
     }
-    return false;
+
+    if (($u['rol'] ?? '') === 'propietario') {
+        $afiliadoStmt = $pdo->prepare('SELECT estado FROM afiliados WHERE usuario_id = ? LIMIT 1');
+        $afiliadoStmt->execute([$u['id']]);
+        $afiliacion = $afiliadoStmt->fetch();
+
+        if ($afiliacion && $afiliacion['estado'] !== 'aprobado') {
+            $mensaje = $afiliacion['estado'] === 'pendiente'
+                ? 'Tu solicitud de afiliación aún no ha sido aprobada por el administrador.'
+                : 'Tu solicitud de afiliación fue rechazada. Contacta al administrador para más información.';
+
+            return ['success' => false, 'message' => $mensaje];
+        }
+    }
+
+    $_SESSION['usuario_id'] = $u['id'];
+    $_SESSION['usuario_email'] = $u['email'];
+    $_SESSION['usuario_rol'] = $u['rol'];
+
+    return ['success' => true, 'message' => ''];
 }
 
 function manejar_registro_afiliado() {
