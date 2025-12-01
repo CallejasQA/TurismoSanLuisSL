@@ -85,6 +85,7 @@ function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bo
         $rol = $_SESSION['usuario_rol'] ?? '';
         if ($rol === 'propietario') {
             $links[] = ['href' => 'index.php?ruta=propietario/sitios', 'label' => 'Mi Panel'];
+            $links[] = ['href' => 'index.php?ruta=propietario/agenda', 'label' => 'Agenda'];
             $links[] = ['href' => 'index.php?ruta=propietario/reservas', 'label' => 'Reservas'];
             $links[] = ['href' => 'index.php?ruta=propietario/valoraciones', 'label' => 'Comentarios'];
         }
@@ -97,6 +98,7 @@ function cabecera($titulo = 'Turismo San Luis', array $extraCss = [], string $bo
             $links[] = ['href' => 'index.php?ruta=admin/servicios', 'label' => 'Servicios'];
             $links[] = ['href' => 'index.php?ruta=admin/configuracion', 'label' => 'Configuración'];
             $links[] = ['href' => 'index.php?ruta=admin/clientes', 'label' => 'Clientes'];
+            $links[] = ['href' => 'index.php?ruta=admin/agenda', 'label' => 'Agenda'];
             $links[] = ['href' => 'index.php?ruta=admin/reservas', 'label' => 'Reservas'];
             $links[] = ['href' => 'index.php?ruta=admin/valoraciones', 'label' => 'Comentarios'];
         }
@@ -164,6 +166,10 @@ switch ($ruta) {
     case 'propietario/reservas':
         $ctrl = new ReservaController();
         $ctrl->propietarioIndex();
+        break;
+    case 'propietario/agenda':
+        $ctrl = new ReservaController();
+        $ctrl->propietarioAgenda();
         break;
     case 'propietario/reservas/estado':
         $ctrl = new ReservaController();
@@ -248,6 +254,10 @@ switch ($ruta) {
     case 'admin/reservas':
         $ctrl = new ReservaController();
         $ctrl->adminIndex();
+        break;
+    case 'admin/agenda':
+        $ctrl = new ReservaController();
+        $ctrl->adminAgenda();
         break;
     case 'admin/reservas/estado':
         $ctrl = new ReservaController();

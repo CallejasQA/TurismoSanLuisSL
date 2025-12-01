@@ -55,6 +55,36 @@ class Reserva {
         return $stmt->fetchAll();
     }
 
+    public function listarAgendaPropietario($propietarioId, $mes = '', $alojamientoId = null) {
+        [$inicio, $fin] = $this->rangoMes($mes);
+        $params = [$propietarioId];
+        $filtros = '';
+
+        if ($alojamientoId) {
+            $filtros .= ' AND a.id = ?';
+            $params[] = $alojamientoId;
+        }
+
+        if ($inicio && $fin) {
+            $filtros .= ' AND r.fecha_inicio <= ? AND r.fecha_fin >= ?';
+            $params[] = $fin;
+            $params[] = $inicio;
+        }
+
+        $sql = "SELECT r.*, a.nombre AS alojamiento, a.ubicacion, a.id AS alojamiento_id, cu.email AS cliente_email, "
+             . "COALESCE(cp.primer_nombre, cu.nombre) AS cliente_nombre, cp.primer_apellido AS cliente_apellido "
+             . "FROM reservas r "
+             . "JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "JOIN usuarios cu ON cu.id = r.cliente_id "
+             . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
+             . "WHERE a.propietario_id = ?" . $filtros
+             . " ORDER BY r.fecha_inicio ASC, r.creado_en DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
     public function listarParaAdmin($mes = '', $propietarioId = null) {
         [$inicio, $fin] = $this->rangoMes($mes);
         $params = [];
@@ -78,6 +108,37 @@ class Reserva {
              . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
              . "WHERE 1=1" . $filtro
              . " ORDER BY r.fecha_inicio DESC, r.creado_en DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    public function listarAgendaAdmin($mes = '', $propietarioId = null) {
+        [$inicio, $fin] = $this->rangoMes($mes);
+        $params = [];
+        $filtro = '';
+
+        if ($propietarioId) {
+            $filtro .= ' AND a.propietario_id = ?';
+            $params[] = $propietarioId;
+        }
+
+        if ($inicio && $fin) {
+            $filtro .= ' AND r.fecha_inicio <= ? AND r.fecha_fin >= ?';
+            $params[] = $fin;
+            $params[] = $inicio;
+        }
+
+        $sql = "SELECT r.*, a.nombre AS alojamiento, a.ubicacion, a.id AS alojamiento_id, a.propietario_id, ap.email AS propietario_email, "
+             . "cu.email AS cliente_email, COALESCE(cp.primer_nombre, cu.nombre) AS cliente_nombre, cp.primer_apellido AS cliente_apellido "
+             . "FROM reservas r "
+             . "JOIN alojamientos a ON a.id = r.alojamiento_id "
+             . "JOIN usuarios ap ON ap.id = a.propietario_id "
+             . "JOIN usuarios cu ON cu.id = r.cliente_id "
+             . "LEFT JOIN clientes_perfiles cp ON cp.usuario_id = cu.id "
+             . "WHERE 1=1" . $filtro
+             . " ORDER BY r.fecha_inicio ASC, r.creado_en DESC";
+
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll();
@@ -114,7 +175,13 @@ class Reserva {
         return $this->db->query($sql)->fetchAll();
     }
 
-    private function rangoMes($mes) {
+    public function alojamientosDePropietario(int $propietarioId): array {
+        $stmt = $this->db->prepare("SELECT id, nombre FROM alojamientos WHERE propietario_id = ? ORDER BY nombre");
+        $stmt->execute([$propietarioId]);
+        return $stmt->fetchAll();
+    }
+
+    public function rangoMes($mes) {
         if (!preg_match('/^\d{4}-\d{2}$/', $mes)) {
             return [null, null];
         }
