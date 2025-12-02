@@ -2,7 +2,7 @@
   <div class="toolbar">
     <div>
       <h1>Agenda de ocupación</h1>
-      <p class="muted">Visualiza tus reservas por día y filtra por alojamiento y mes.</p>
+      <p class="muted">Visualiza tus reservas por día y filtra por alojamiento, mes o un día concreto.</p>
     </div>
     <form class="toolbar__actions" method="get" action="index.php">
       <input type="hidden" name="ruta" value="propietario/agenda">
@@ -13,7 +13,9 @@
         <?php endforeach; ?>
       </select>
       <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
+      <input type="date" name="dia" value="<?= htmlspecialchars($diaSeleccionado ?? '') ?>" placeholder="AAAA-MM-DD">
       <button type="submit">Filtrar</button>
+      <button type="button" onclick="window.location='index.php?ruta=propietario/agenda'">Limpiar filtros</button>
     </form>
   </div>
 

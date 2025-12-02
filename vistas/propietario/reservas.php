@@ -8,6 +8,7 @@
       <input type="hidden" name="ruta" value="propietario/reservas">
       <input type="month" name="mes" value="<?= htmlspecialchars($mesSeleccionado ?? '') ?>">
       <button type="submit">Filtrar</button>
+      <button type="button" onclick="window.location='index.php?ruta=propietario/reservas'">Limpiar filtros</button>
     </form>
   </div>
 

@@ -58,16 +58,24 @@ class ReservaController {
 
     public function propietarioAgenda() {
         $this->soloPropietario();
-        $mes = $this->mesConDefault($_GET['mes'] ?? '');
+        $dia = $this->diaSeguro($_GET['dia'] ?? '');
+        $mesParametro = $this->mesConDefault($_GET['mes'] ?? '');
+        $mes = $dia !== '' ? substr($dia, 0, 7) : $mesParametro;
         $alojamiento = isset($_GET['alojamiento']) && $_GET['alojamiento'] !== '' ? (int) $_GET['alojamiento'] : null;
 
         $reservas = $this->reservaModelo->listarAgendaPropietario($_SESSION['usuario_id'], $mes, $alojamiento);
         [$inicioMes, $finMes] = $this->reservaModelo->rangoMes($mes);
         $agenda = $this->construirAgenda($reservas, $inicioMes, $finMes);
-        $hayReservas = array_reduce($agenda, fn($carry, $items) => $carry + count($items), 0) > 0;
+
+        if ($dia !== '') {
+            $agenda = [$dia => $agenda[$dia] ?? []];
+        }
+
+        $hayReservas = $dia !== '' ? true : array_reduce($agenda, fn($carry, $items) => $carry + count($items), 0) > 0;
         $alojamientos = $this->reservaModelo->alojamientosDePropietario($_SESSION['usuario_id']);
         $mesSeleccionado = $mes;
         $alojamientoSeleccionado = $alojamiento;
+        $diaSeleccionado = $dia;
 
         require __DIR__ . '/../vistas/propietario/agenda.php';
     }
@@ -90,6 +98,11 @@ class ReservaController {
 
     private function soloPropietario() {
         if (($_SESSION['usuario_rol'] ?? '') !== 'propietario') { header('Location: index.php?ruta=auth/login'); exit; }
+    }
+
+    private function diaSeguro($dia) {
+        $dia = substr(trim($dia), 0, 10);
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $dia) ? $dia : '';
     }
 
     private function mesSeguro($mes) {
