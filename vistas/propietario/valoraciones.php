@@ -26,6 +26,7 @@
       </div>
       <div style="align-self:flex-end;">
         <button type="submit">Filtrar</button>
+        <button type="button" onclick="window.location='index.php?ruta=propietario/valoraciones'">Limpiar filtros</button>
       </div>
     </div>
   </form>

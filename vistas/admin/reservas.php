@@ -14,6 +14,7 @@
         <?php endforeach; ?>
       </select>
       <button type="submit">Filtrar</button>
+      <button type="button" onclick="window.location='index.php?ruta=admin/reservas'">Limpiar filtros</button>
     </form>
   </div>
 
