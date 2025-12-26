@@ -1,28 +1,61 @@
-TurismoSanluisSL - Versión en español y consistente
+# Turismo San Luis SL
+Portal web para gestionar alojamientos turísticos en San Luis (Glamping, hoteles, cabañas, ecohoteles, etc.). Permite publicar propiedades, administrar reservas y valoraciones, y controlar la experiencia desde diferentes roles (visitante, cliente, propietario y administrador).
 
-Instrucciones rápidas:
-1. Colocar la carpeta descomprimida en C:\xampp\htdocs\TurismoSanLuisSL
-2. Copiar .env.example -> .env y ajustar si tu MySQL tiene contraseña
-3. Importar database_schema.sql en phpMyAdmin (o ejecutar el script)
-4. Iniciar Apache y MySQL desde XAMPP
-5. Ejecutar UNA VEZ: http://localhost/TurismoSanLuisSL/public/sembrar_usuarios.php
-6. Probar en: http://localhost/TurismoSanLuisSL/public/
+## Características principales
+- **Catálogo público:** inicio con alojamientos activos, carrusel destacado y filtros por ubicación, operador y calificación.
+- **Detalle del alojamiento:** información, servicios, galería y valoraciones; los clientes pueden reservar y dejar comentarios si ya finalizaron una estadía.
+- **Registro y autenticación:** flujo para afiliados (propietarios) y clientes; validaciones de correo, contraseña y datos de negocio.
+- **Panel del propietario:** crear, editar o eliminar alojamientos, cargar imágenes, seleccionar servicios, revisar agenda y reservas, y gestionar valoraciones recibidas.
+- **Panel del administrador:** aprobar o rechazar solicitudes de afiliación y alojamientos, activar/desactivar propiedades, marcar alojamientos en el slider, administrar servicios ofrecidos y configurar la imagen de fondo.
+- **Gestión de clientes y reservas:** módulos para revisar reservas (agenda y estados), ver listados de clientes y moderar valoraciones.
 
-Usuarios de prueba (siembra):
-- admin@turismosl.com / 123456  (rol: admin)
-- propietario@turismosl.com / 123456 (rol: propietario)
+## Requisitos
+- PHP 8+ con extensiones mysqli/PDO habilitadas.
+- Servidor web (Apache recomendado; se puede usar XAMPP/Laragon/WAMP).
+- MySQL/MariaDB.
+- Acceso a un entorno donde puedas servir el directorio `public/` como raíz pública.
 
-Notas de funcionamiento:
-- La página de inicio muestra los alojamientos aprobados/activos con enlace a detalle.
-- Las imágenes subidas se guardan en public/storage/subidas (ya incluida la carpeta) para que sean accesibles desde el navegador.
-- Los propietarios gestionan sus alojamientos en /public/index.php?ruta=propietario/sitios.
-- Los administradores validan solicitudes en /public/index.php?ruta=admin/afiliaciones y aprueban/activan alojamientos en /public/index.php?ruta=admin/alojamientos.
-Después de probar, eliminar public/sembrar_usuarios.php por seguridad.
+## Instalación y configuración rápida
+1. **Clonar o copiar** este repositorio dentro del directorio público de tu servidor web, por ejemplo `C:\xampp\htdocs\TurismoSanLuisSL` en Windows o `/var/www/html/TurismoSanLuisSL` en Linux/macOS.
+2. **Configurar variables de entorno:** duplica `.env.example` como `.env` y ajusta los valores:
+   ```
+   DB_HOST=127.0.0.1
+   DB_NAME=turismo_sanluis_db
+   DB_USER=root
+   DB_PASS=
+   APP_URL=http://localhost/TurismoSanluisSL/public
+   ```
+3. **Crear la base de datos:** importa `database_schema.sql` desde phpMyAdmin o ejecuta el script con tu cliente MySQL para crear tablas y datos básicos (usuarios demo incluidos).
+4. **Iniciar servicios:** levanta Apache y MySQL desde tu stack (XAMPP, etc.).
+5. **Sembrar usuarios (opcional si ya importaste el SQL):** visita una sola vez `http://localhost/TurismoSanLuisSL/public/sembrar_usuarios.php` para crear cuentas demo si no existen.
+6. **Probar la app:** entra a `http://localhost/TurismoSanLuisSL/public/`.
 
-Flujo básico para sincronizar tus cambios con Git:
-1) Verifica el estado actual: `git status`.
-2) Trae los últimos cambios del remoto antes de trabajar: `git pull origin work` (ajusta la rama si usas otra).
-3) Agrega tus modificaciones: `git add .` (o archivos específicos).
-4) Crea un commit descriptivo: `git commit -m "Mensaje claro del cambio"`.
-5) Envía el commit al remoto: `git push origin work`.
-6) Si aparece un conflicto después de `git pull`, resuélvelo en los archivos indicados, vuelve a ejecutar `git add` y `git commit`.
+## Usuarios demo
+- Administrador: `admin@turismosl.com` / `123456`
+- Propietario: `propietario@turismosl.com` / `123456`
+- Cliente: `cliente@turismosl.com` / `123456`
+
+> Por seguridad, elimina `public/sembrar_usuarios.php` después de usarlo en producción.
+
+## Rutas útiles
+- Inicio público: `/public/index.php`
+- Registro propietario (afiliado): `/public/index.php?ruta=auth/register`
+- Registro cliente: `/public/index.php?ruta=auth/register-cliente`
+- Login: `/public/index.php?ruta=auth/login`
+- Panel propietario: `/public/index.php?ruta=propietario/sitios`
+- Panel administrador:
+  - Afiliaciones: `/public/index.php?ruta=admin/afiliaciones`
+  - Alojamientos: `/public/index.php?ruta=admin/alojamientos`
+  - Servicios: `/public/index.php?ruta=admin/servicios`
+  - Configuración: `/public/index.php?ruta=admin/configuracion`
+
+## Archivos y carpetas relevantes
+- `public/`: raíz pública de la aplicación (CSS, index.php, semillas, subidas).
+- `public/storage/subidas/`: se guardan las imágenes cargadas de alojamientos.
+- `controladores/`, `modelos/`, `vistas/`: MVC simple sin framework, organizado por roles/módulos.
+- `config/config.php`: lee `.env` y expone las constantes de conexión y `APP_URL`.
+
+## Recomendaciones
+- Revisa los permisos de `public/storage/subidas` y `public/uploads` para permitir escritura del servidor web.
+- Mantén el archivo `.env` fuera del control de versiones y configura contraseñas seguras en tu servidor.
+- Después de pruebas locales, elimina semillas y credenciales por defecto antes de exponer la app públicamente.
